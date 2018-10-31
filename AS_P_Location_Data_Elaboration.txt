@@ -1,0 +1,103 @@
+As noted in the Project Description, AS-P will serve a small number of clinics in the NT Islands and HK Southern District groups, and you will be supplied with all location data and inter-location distances.
+
+Initially your system will serve the following 8 locations (7 clinics and the supplying hospital).  Please be sure to load the data before your Elaboration demo. 
+
+For AS-P, you can assume that the distance from any location A to any location B is the same as the reverse distance from B to A. The full Air Supply system will use effective distances that also reflect current weather conditions and the A->B distance may be different from the B->A distance, however this is not a concern for the simpler AS-P system.
+
+For each location, the following are provided below: name, latitude, longitude, and altitude.
+
+Inter-location distances are given for all pairs of locations.
+
+To ensure your system can be extended, you will be required to add at least one further location directly ahead of your final demo at the end of Construction 2. You can make the additions through Django Admin; an interface is not required.
+
+--------------------------------------------------------------
+
+
+AS-P New Territories Group: Islands
+
+ Mui Wo General Out-patient Clinic
+ Lat. 22.266040, Long. 113.997882, Alt. 17m  
+
+  Distances to other locations:
+
+  North Lamma Clinic    12.54km
+  Peng Chau Clinic       4.68km
+  Sok Kwu Wan Clinic    15.32km
+  Tai O Clinic          14.44km
+  Aberdeen Clinic       16.41km
+  Ap Lei Chau Clinic    16.24km
+  Queen Mary Hospital   13.74km
+
+
+ North Lamma General Out-patient Clinic
+ Lat. 22.224295, Long. 114.111098, Alt. 20m
+
+  Distances to other locations:
+
+  Peng Chau Clinic       9.92km
+  Sok Kwu Wan Clinic     2.96km
+  Tai O Clinic          26.29km
+  Aberdeen Clinic        5.45km
+  Ap Lei Chau Clinic     4.87km
+  Queen Mary Hospital    5.52km
+
+
+ Peng Chau General Out-patient Clinic
+ Lat. 22.283621, Long. 114.039154, Alt. 8m
+
+  Distances to other locations:
+
+  Sok Kwu Wan Clinic    12.88km
+  Tai O Clinic          18.90km
+  Aberdeen Clinic       12.64km
+  Ap Lei Chau Clinic    12.62km
+  Queen Mary Hospital    9.61km
+
+
+ Sok Kwu Wan General Out-patient Clinic
+ Lat. 22.205606, Long. 114.131597, Alt. 21m
+
+  Distances to other locations:
+
+  Tai O Clinic          28.71km
+  Aberdeen Clinic        5.53km
+  Ap Lei Chau Clinic     4.77km
+  Queen Mary Hospital    7.19km
+
+
+ Tai O Jockey Club General Out-patient Clinic
+ Lat. 22.255725, Long. 113.857972, Alt. 2m
+
+  Distances to other locations:
+
+  Aberdeen Clinic        30.72km
+  Ap Lei Chau Clinic     30.47km
+  Queen Mary Hospital    28.18km
+
+
+
+Hong Kong Island Group: Southern District
+
+
+ Aberdeen Jockey Club General Out-patient Clinic
+ Lat. 22.249740, Long. 114.156384, Alt. 44m
+
+  Distances to other locations:
+
+  Ap Lei Chau Clinic     0.77km
+  Queen Mary Hospital    3.44km
+
+
+ Ap Lei Chau General Out-patient Clinic
+ Lat. 22.243243, Long. 114.153765, Alt. 56m
+
+  Distances to other locations:
+
+  Queen Mary Hospital   3.79km
+
+
+
+Supplying Hospital
+
+ Queen Mary Hospital Drone Port
+ Lat. 22.270257, Long. 114.131376, Alt. 161m   
