@@ -14,6 +14,9 @@ class User(models.Model):
 class Clinic(models.Model):
 	clinic_name = models.CharField(max_length=100)
 	clinic_address = models.CharField(max_length=200)
+	latitude = models.DecimalField(max_digits=10, decimal_places=6)
+	longitude = models.DecimalField(max_digits=10, decimal_places=6)
+	altitude = models.DecimalField(max_digits=10, decimal_places=6)
 	def __str__(self):
 		return self.clinic_name
 
@@ -55,7 +58,7 @@ class Order(models.Model):
 	dispatcher_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, db_constraint=False, related_name='dispatcher_id')
 	dilivered_time = models.DateTimeField()
 	canceled_time = models.DateTimeField()
-	destination = models.CharField(max_length=200)
+	destination_id = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, db_constraint=False, related_name='destination_id')
 	def __str__(self):
 		return f'{self.placing_time} ({self.status})'
 
@@ -83,3 +86,10 @@ class DispatchQueue(models.Model):
 	order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
 	def __init__(self):
 		return self.order_id
+
+class Distance(object):
+	source_clinic_id = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='source_clinic_id')
+	destination_clinic_id = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='destination_clinic_id')
+	distance = models.DecimalField(max_digits=5, decimal_places=2)
+	def __init__(self):
+		return f'{self.source_clinic_id} - {self.destination_clinic_id}'
