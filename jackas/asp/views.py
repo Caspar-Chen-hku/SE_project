@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.list import ListView
 from datetime import datetime
+from django.template import loader
 from asp.models import User, Clinic, Token, Order, Item, OrderContainsItem, PriorityQueue, DispatchQueue, Category
 
 def constructOrder(request, id):
@@ -20,12 +21,11 @@ def constructOrder(request, id):
 		return render(request, 'http://127.0.0.1:8000/asp/clinic_manager/1/home', {
 			'error_message': "modifying database is unsuccessful"
 		})
-	else:
-		new_instance.save()
-		# Always return an HttpResponseRedirect after successfully dealing
-		# with POST data. This prevents data from being posted twice if a
-		# user hits the Back button.
-		return HttpResponseRedirect(reverse('http://127.0.0.1:8000/asp/clinic_manager/'+id+'/view_order', args=(question.id,)))
+	new_instance.save()
+	# Always return an HttpResponseRedirect after successfully dealing
+	# with POST data. This prevents data from being posted twice if a
+	# user hits the Back button.
+	return HttpResponseRedirect(reverse('http://127.0.0.1:8000/asp/clinic_manager/'+id+'/view_order', args=(id)))
 
 class CMViewItems(ListView):
 	"""docstring for CMViewItems"""
@@ -62,14 +62,26 @@ class CMViewOrder(ListView):
 		return Order.objects.filter(order_id__pk=self.id).all()
 		
 class DispatcherViewQueue(ListView):
-	"""docstring for DispatcherViewQueue"""
 	def get(self, request):
-		return HttpResponse('hello world')
-		
+		queue_record_list = DispatchQueue.objects.all()
+		order_list = [elem.order_id for elem in queue_record_list]
+		template = loader.get_template('asp/dispatch_queue_list.html')
+		context = {
+			'order_list': order_list,
+		}
+		return HttpResponse(template.render(context, request))
+
 class DispatcherViewPackage(ListView):
-	"""docstring for DispatcherViewQueue"""
 	def get(self, request):
-		return HttpResponse('hello world')
+		queue_record_list = DispatchQueue.objects.all()
+		order_list = [elem.order_id for elem in queue_record_list]
+		total_weight = sum([elem.weight for elem in order_list])
+		template = loader.get_template('asp/view_package.html')
+		context = {
+			'order_list': order_list,
+			'total_weight': total_weight,
+		}
+		return HttpResponse(template.render(context, request))
 		
 class DispatcherViewItinerary(ListView):
 	"""docstring for DispatcherViewQueue"""

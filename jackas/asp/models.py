@@ -61,7 +61,7 @@ class Order(models.Model):
 	canceled_time = models.DateTimeField(null=True, blank=True)
 	destination_id = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, db_constraint=False, related_name='destination_id')
 	def __str__(self):
-		return f'{self.placing_time} ({self.status})'
+		return f'{self.id}'# f'{self.placing_time} ({self.status})'
 
 class Category(models.Model):
 	category_name = models.CharField(max_length=50)
@@ -86,17 +86,17 @@ class OrderContainsItem(models.Model):
 
 class PriorityQueue(models.Model):
 	order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
-	def __init__(self):
-		return self.order_id
+	def __str__(self):
+		return f'{self.order_id}'
 
 class DispatchQueue(models.Model):
 	order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
-	def __init__(self):
-		return self.order_id
+	def __str__(self):
+		return f'{self.order_id}'
 
-class Distance(object):
+class Distance(models.Model):
 	source_clinic_id = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='source_clinic_id')
 	destination_clinic_id = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='destination_clinic_id')
 	distance = models.DecimalField(max_digits=5, decimal_places=2)
-	def __init__(self):
+	def __str__(self):
 		return f'{self.source_clinic_id} - {self.destination_clinic_id}'

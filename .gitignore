@@ -2,3 +2,4 @@ Pipfile
 Pipfile.lock
 jackas/db.sqlite3
 jackas/asp/migrations
+jackas/asp/migrations
