@@ -8,6 +8,7 @@ class User(models.Model):
 	email = models.CharField(max_length=50)
 	ROLE_CHOICES = [['CM', 'Clinic Manager'], ['WP', 'Warehouse Personnel'], ['D', 'Dispacher']]
 	role = models.CharField(max_length=2, choices=ROLE_CHOICES, default='CM')
+	clinic_id = models.ForeignKey(Clinic, null=True)
 	def __str__(self):
 		return self.username
 
