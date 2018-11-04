@@ -53,12 +53,12 @@ class Order(models.Model):
 		default='QFP',
 	)
 	placing_time = models.DateTimeField()
-	processing_time = models.DateTimeField(null=True)
+	processing_time = models.DateTimeField(null=True, blank=True)
 	processor_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, db_constraint=False, related_name='processor_id')
-	dispatching_time = models.DateTimeField(null=True)
+	dispatching_time = models.DateTimeField(null=True, blank=True)
 	dispatcher_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, db_constraint=False, related_name='dispatcher_id')
-	dilivered_time = models.DateTimeField(null=True)
-	canceled_time = models.DateTimeField(null=True)
+	dilivered_time = models.DateTimeField(null=True, blank=True)
+	canceled_time = models.DateTimeField(null=True, blank=True)
 	destination_id = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, db_constraint=False, related_name='destination_id')
 	def __str__(self):
 		return f'{self.placing_time} ({self.status})'
