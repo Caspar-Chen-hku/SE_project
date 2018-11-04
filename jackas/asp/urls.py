@@ -2,12 +2,17 @@ from django.urls import path
 from asp import views
 
 urlpatterns = [
-	path('clinic_manager/home',
+	path('clinic_manager/<int:id>/home/<int:category>',
 		views.CMViewItems.as_view(),
 		name='clinic_manager-home'),
-	path('clinic_manager/construct_order',
-		views.CMConstructOrder.as_view(),
-		name='clinic_manager-construct'),
+	path('clinic_manager/item_info/<int:id>',
+		views.CMViewItemInfo.as_view()),
+	path('clinic_manager/<int:id>/construct_order', 
+		views.constructOrder, 
+		name='constructOrder'),
+	path('clinic_manager/<int:id>/view_order',
+		views.CMViewOrder.as_view(),
+		name='clinic_manager-view_order'),
 	path('dispatcher/home',
 		views.DispatcherViewQueue.as_view(),
 		name='dispatcher-home'),
