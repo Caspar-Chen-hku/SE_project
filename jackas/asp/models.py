@@ -61,7 +61,7 @@ class Order(models.Model):
 	canceled_time = models.DateTimeField(null=True, blank=True)
 	destination_id = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, db_constraint=False, related_name='destination_id')
 	def __str__(self):
-		return f'{self.placing_time} ({self.status})'
+		return f'{self.id}'# f'{self.placing_time} ({self.status})'
 
 class Category(models.Model):
 	category_name = models.CharField(max_length=50)

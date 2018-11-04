@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#orders {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#orders td, #orders th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#orders tr:nth-child(even){background-color: #f2f2f2;}
+
+#orders tr:hover {background-color: #ddd;}
+
+#orders th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+</style>
+</head>
+
+<h1>Dispatch Queue</h1> 
+<button onclick="location.href='dispatch_order'" id="myButton">Dispatch</button>
+<table id="orders">
+  <tr>
+    <th>Order ID</th>
+    <th>Owner Name</th> 
+    <th>Destination</th>
+    <th>Priority</th>
+    <th>Weight</th>
+    <th>Order Details</th>
+  </tr>
+  {% for order in order_list %}
+  <tr>
+    <td>{{order.id}}</td>
+    <td>{{order.owner_id.firstname}} {{order.owner_id.lastname}}</td> 
+    <td>{{order.destination_id.clinic_address}}</td>
+    <td>{{order.priority}}</td>
+    <td>{{order.weight}}</td>
+    <td>Under Construction</td>
+  </tr>
+  {% endfor %} 
+</table>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#orders {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#orders td, #orders th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#orders tr:nth-child(even){background-color: #f2f2f2;}
+
+#orders tr:hover {background-color: #ddd;}
+
+#orders th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+#csv-button {
+  display: inline-block;
+  padding: 6px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px #999;
+}
+#csv-button:hover {background-color: #3e8e41}
+#csv-button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 3px #666;
+  transform: translateY(4px);
+}
+#confirm-button {
+  display: inline-block;
+
+  padding: 6px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #f4a142;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px #999;
+}
+#confirm-button:hover {background-color: #846036}
+#confirm-button:active {
+  background-color: #846036;
+  box-shadow: 0 3px #666;
+  transform: translateY(4px);
+}
+</style>
+</head>
+
+<h1>Package Details</h1>
+<table id="orders">
+  <tr>
+    <th>Order ID</th>
+    <th>Owner Name</th> 
+    <th>Destination</th>
+    <th>Priority</th>
+    <th>Weight</th>
+    <th>Order Details</th>
+  </tr>
+  {% for order in order_list %}
+  <tr>
+    <td>{{order.id}}</td>
+    <td>{{order.owner_id.firstname}} {{order.owner_id.lastname}}</td> 
+    <td>{{order.destination_id.clinic_address}}</td>
+    <td>{{order.priority}}</td>
+    <td>{{order.weight}}</td>
+    <td>Under Construction</td>
+  </tr>
+  {% endfor %} 
+</table>
+
+<h4 style="text-align: right;">Total Weight = {{total_weight}} KG</h4>
+<center><button onclick="location.href='confirm_dispatch'" id="confirm-button">Confirm</button>
+<button onclick="location.href='generate_csv'" id="csv-button">Generate CSV</button></center>
