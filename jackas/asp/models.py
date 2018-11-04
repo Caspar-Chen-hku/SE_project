@@ -80,6 +80,7 @@ class Item(models.Model):
 class OrderContainsItem(models.Model):
 	order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
 	item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
+	item_quantity = models.IntegerField()
 	def __str__(self):
 		return f'{self.order_id} ({self.item_id})'
 
