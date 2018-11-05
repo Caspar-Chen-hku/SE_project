@@ -77,7 +77,7 @@ class CMConstructOrder(ListView):
 			'num_order': num_order,
 			'new_weight': new_weight,
 			'new_priority': new_priority,
-			'user': user,
+			'user_id': user_id,
 			'item_list': item_list,
 			'quantity_list': quantity_list,
 			'photo_list': photo_list
@@ -163,9 +163,8 @@ class DispatcherViewItinerary(ListView):
 			distance[(elem.source_clinic_id,elem.destination_clinic_id)]=distance[(elem.destination_clinic_id,elem.source_clinic_id)]=elem.distance
 		clinic={}
 		#require这边clinic_id和上面的对应
-		clinic_id=1
 		for elem in clinic_list:
-			clinic[clinic_id]=(elem.latitude,elem.longitude,elem.altitude)
+			clinic[elem.pk]=(elem.latitude,elem.longitude,elem.altitude,elem.distance_to_hospital)
 			clinic_id +=1
 
 		package # a list of order objects
@@ -173,7 +172,7 @@ class DispatcherViewItinerary(ListView):
 		for order in package:
 			route_list.append(order.destination_id)
 		routes_order=genRoutes(len(route_list),route_list)
-		shortest=calCosts(routes_order,distance)
+		shortest=calCosts(routes_order,distance,clinic)
 		#with open('itenerary.csv', mode='w') as itenerary_file:
 		response = HttpResponse(content_type='text/csv')
 		writer=csv.writer(response)
@@ -181,14 +180,15 @@ class DispatcherViewItinerary(ListView):
 			writer.writerow('latitude longitude and altitude#',clinic[item])
 		return response
 
-	def calCosts(routes, distance):
+	def calCosts(routes, distance,clinic_list):
 		travelCosts = []
 
 		for route in routes:
 			travelCost = 0
-			travelCost +=distance[(1,route[0])]
+			travelCost +=clinic_list[route[0]][4]
+			travelCost +=clinic_list[route[-1]][4]
 			#Sums up the travel cost
-			for i in range(1,len(route)):
+			for i in range(1,len(route)-1):
 				#takes an element of route, uses it to find the corresponding coords and calculates the distance
 				travelCost += distance[(route[i-1],route[i])]
 			travelCosts.append(travelCost)
@@ -202,12 +202,14 @@ class DispatcherViewItinerary(ListView):
 		#uses built-in itertools to generate permutations
 		routes = list(map(list, itertools.permutations(route_list)))
 		#inserts the home city, must be the first city in every route
+		'''
 		for x in routes:
 			x.append(1)
+		'''
 		return routes
 
 
 class DispatcherConfirmDispatch(ListView):
 	"""docstring for DispatcherViewQueue"""
-	def get(self,request):
-		return HttpResponseRedirect('http://127.0.0.1:8000/asp/dispatcher/home')
+	def get(self, request):
+		return HttpResponse('hello world')
