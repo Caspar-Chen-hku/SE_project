@@ -110,8 +110,8 @@ a {
 }
 
 table img {
-    width: 90px;
-    height: 120px;
+    width: 150px;
+    height: 200px;
 }
 
 #items_display li{
@@ -163,8 +163,8 @@ table img {
 }
 
 #side img {
-    width: 200px;
-    height: 250px;
+    width: 120px;
+    height: 140px;
     margin-left: 50px;
 }
 
@@ -283,7 +283,7 @@ table div {
 
 table {
     margin-top: 10px;
-    width: 80%;
+    width: 90%;
 }
 
 table span {
