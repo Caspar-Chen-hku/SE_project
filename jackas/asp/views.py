@@ -186,9 +186,9 @@ class DispatcherViewItinerary(ListView):
 
 		for route in routes:
 			travelCost = 0
-			travelCost +=distance[(0,route[0])]
+			travelCost +=distance[(1,route[0])]
 			#Sums up the travel cost
-			for i in range(1,len(route)-1):
+			for i in range(1,len(route)):
 				#takes an element of route, uses it to find the corresponding coords and calculates the distance
 				travelCost += distance[(route[i-1],route[i])]
 			travelCosts.append(travelCost)
