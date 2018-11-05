@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Dispatcher Home Page</title>
+{% load static %}
+<link rel='stylesheet' href="{% static "stylesheets/mystyle.css" %}" type='text/css' >
 <style>
 #orders {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -24,28 +28,74 @@
     background-color: #4CAF50;
     color: white;
 }
+
+#dispatch-button {
+  display: inline-block;
+  padding: 6px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px #999;
+}
+#dispatch-button:hover {background-color: #3e8e41}
+#dispatch-button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 3px #666;
+  transform: translateY(4px);
+}
 </style>
 </head>
+<body>
+  <div id='header' style="margin-bottom: 20px">
+    <span id='dispatcher_info'>Hello, {{username}} </span>
+    <span id='website_title'>Orders in Dispatch Queue</span>
+  </div>
 
-<h1>Dispatch Queue</h1> 
-<button onclick="location.href='dispatch_order'" id="myButton">Dispatch</button>
-<table id="orders">
-  <tr>
-    <th>Order ID</th>
-    <th>Owner Name</th> 
-    <th>Destination</th>
-    <th>Priority</th>
-    <th>Weight</th>
-    <th>Order Details</th>
-  </tr>
-  {% for order in order_list %}
-  <tr>
-    <td>{{order.id}}</td>
-    <td>{{order.owner_id.firstname}} {{order.owner_id.lastname}}</td> 
-    <td>{{order.destination_id.clinic_address}}</td>
-    <td>{{order.priority}}</td>
-    <td>{{order.weight}}</td>
-    <td>Under Construction</td>
-  </tr>
-  {% endfor %} 
-</table>
+  <div id='personal' style='width: 20%'>
+    <div style="margin-left: 40px;"><h3>Personal Info</h3></div>
+    <div id='profile'>
+        <div class='myButton' id='profile_btn'>
+            {{username}}
+        </div>
+        <div class='myButton'>Role: Dispatcher</div>
+    </div>
+    <hr style="border: 1px solid black;" />
+
+    <ul id='personal_list' style='list-style-type: none'> 
+        <li class='myButton'> 
+            Personal Information 
+        </li> 
+        <li class='myButton'>Home</li> 
+    </ul> 
+  </div>
+  <div style="width: 75%; float: right;">
+    <!--<h3>Dispatch Queue</h3> -->
+    <button onclick="location.href='dispatch_order'" id="dispatch-button">Dispatch</button>
+    <table id="orders">
+      <tr>
+        <th>Order ID</th>
+        <th>Owner Name</th> 
+        <th>Destination</th>
+        <th>Priority</th>
+        <th>Weight</th>
+        <th>Order Details</th>
+      </tr>
+      {% for order in order_list %}
+      <tr>
+        <td>{{order.id}}</td>
+        <td>{{order.owner_id.firstname}} {{order.owner_id.lastname}}</td> 
+        <td>{{order.destination_id.clinic_address}}</td>
+        <td>{{order.priority}}</td>
+        <td>{{order.weight}}</td>
+        <td>Under Construction</td>
+      </tr>
+      {% endfor %} 
+    </table>
+  </div>
+</body>
