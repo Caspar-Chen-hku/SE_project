@@ -3,6 +3,7 @@ from django.db import models
 class Clinic(models.Model):
 	clinic_name = models.CharField(max_length=100)
 	clinic_address = models.CharField(max_length=200)
+	distance_to_hospital=models.DecimalField(max_digits=10, decimal_places=6, default=0.000000)
 	latitude = models.DecimalField(max_digits=10, decimal_places=6, default=0.000000)
 	longitude = models.DecimalField(max_digits=10, decimal_places=6, default=0.000000)
 	altitude = models.DecimalField(max_digits=10, decimal_places=6, default=0.000000)
