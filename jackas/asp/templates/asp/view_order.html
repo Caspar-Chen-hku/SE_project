@@ -79,9 +79,9 @@
             <td>Under Construction</td>
             <td>{{order.status}}</td>
             <td>
-                <button>Delivered</button>
+                <button onclick="location.href='/asp/clinic_manager/{{user.id}}/confirm_order/{{order.id}}'">Delivered</button>
                 {% if order.status == 'QFP' %}
-                    <button>Cancel</button>
+                    <button onclick="location.href='/asp/clinic_manager/{{user.id}}/cancel_order/{{order.id}}'">Cancel</button>
                 {% endif %}
             </td>
           </tr>
@@ -110,7 +110,7 @@
                     {{order.canceled_time}}
                 {% endif %}
                 {% if order.status == 'DE' %}
-                    {{order.delivered_time}}
+                    {{order.dilivered_time}}
                 {% endif %}
             </td>
           </tr>
