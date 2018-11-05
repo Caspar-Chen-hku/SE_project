@@ -202,10 +202,6 @@ class DispatcherViewItinerary(ListView):
 		#uses built-in itertools to generate permutations
 		routes = list(map(list, itertools.permutations(route_list)))
 		#inserts the home city, must be the first city in every route
-		'''
-		for x in routes:
-			x.append(1)
-		'''
 		return routes
 
 
