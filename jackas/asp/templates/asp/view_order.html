@@ -49,8 +49,12 @@
             <li class='myButton'> 
                 Personal Information 
             </li> 
-            <li class='myButton'>Home</li> 
-            <li class='myButton'>View Orders</li>
+            <li class='myButton' >
+                <a href="home/1">Home</a>
+            </li> 
+            <li class='myButton'>
+                <a href="view_order">View Orders</a>
+            </li>
         </ul> 
     </div>
 
@@ -59,20 +63,25 @@
         <table id="orders">
           <tr>
             <th>Order ID</th>
-            <th>Destination</th>
             <th>Priority</th>
             <th>Weight</th>
             <th>Order Details</th>
             <th>Status</th>
+            <th>Operation</th>
           </tr>
           {% for order in processing_orders %}
           <tr>
             <td>{{order.id}}</td>
-            <td>{{order.destination_id.clinic_address}}</td>
             <td>{{order.priority}}</td>
             <td>{{order.weight}}</td>
             <td>Under Construction</td>
             <td>{{order.status}}</td>
+            <td>
+                <button>Delivered</button>
+                {% if order.status == 'QFP' %}
+                    <button>Cancel</button>
+                {% endif %}
+            </td>
           </tr>
           {% endfor %} 
         </table>
@@ -81,20 +90,27 @@
         <table id="orders">
           <tr>
             <th>Order ID</th>
-            <th>Destination</th>
             <th>Priority</th>
             <th>Weight</th>
             <th>Order Details</th>
             <th>Status</th>
+            <th>Delivered/Canceled Time</th>
           </tr>
           {% for order in other_orders %}
           <tr>
             <td>{{order.id}}</td>
-            <td>{{order.destination_id.clinic_address}}</td>
             <td>{{order.priority}}</td>
             <td>{{order.weight}}</td>
             <td>Under Construction</td>
             <td>{{order.status}}</td>
+            <td>
+                {% if order.status == 'CA' %}
+                    {{order.canceled_time}}
+                {% endif %}
+                {% if order.status == 'DE' %}
+                    {{order.delivered_time}}
+                {% endif %}
+            </td>
           </tr>
           {% endfor %} 
         </table>
