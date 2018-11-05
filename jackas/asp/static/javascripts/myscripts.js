@@ -3,11 +3,14 @@ var totalWeight = 0.0;
 var currentOrder = {};
 var maxWeight = 25.0;
 
+function constructOrder(){
+    console.log("clicked");
+}
+
 function initiateVar(){
     totalWeight = 0.0;
     currentOrder = {};
     maxWeight = 25.0;
-
 }
 
 function updateVar(itemid, quantity){
@@ -38,20 +41,6 @@ function updateOrder(itemid, itemweight, quantity){
     } else {
         totalWeight += itemwei * quant;
         document.getElementById("totalWeight").value = totalWeight;
-        console.log("totalWeight: "+totalWeight);
-        console.log("maxWeight: "+maxWeight);
         updateVar(itemid,quant);
     }
-    console.log(currentOrder);
-}
-
-function constructOrder(userid){
-    if (document.getElementById("totalWeight").value > maxWeight){
-        return;
-    }
-    new_priority = document.getElementById("priority_list").value;
-    $("construct").click(function(){
-    $.post("clinic_manager/"+userid+"/construct_order", {neworder: currentOrder, weight: totalWeight, priority: new_priority}, function(result){
-    });
-});
 }

@@ -68,7 +68,6 @@ p{
 
 table {
     font-family: arial, sans-serif;
-    border-collapse: collapse;
     width: 100%;
 }
 
@@ -267,10 +266,6 @@ table img {
 
 table div {
     margin: 20px 20px;
-}
-
-tr, td {
-    margin: 5px 5px;
 }
 
 table {

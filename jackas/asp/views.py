@@ -5,27 +5,85 @@ from datetime import datetime
 from django.template import loader
 from asp.models import User, Clinic, Token, Order, Item, OrderContainsItem, PriorityQueue, DispatchQueue, Category
 
-def constructOrder(request, id):
-	new_order = request.POST['neworder']
-	new_weight = request.POST['weight']
-	new_priority = request.POST['priority']
-
-	print("new_order: ",new_order)
-	print("new_weight: ",new_weight)
-	print("new_priority: ",new_priority)
-
-	new_instance = Order.objects.create(weight=new_weight,priority=new_priority,status='QFP',placing_time=datetime.now())
-	try:
-		new_order = question.choice_set.get(pk=request.POST['choice'])
-	except (KeyError, Choice.DoesNotExist):
-		return render(request, 'http://127.0.0.1:8000/asp/clinic_manager/1/home', {
-			'error_message': "modifying database is unsuccessful"
-		})
-	new_instance.save()
+#def constructOrder(request, id):
+#	new_order = request.POST['neworder']
+#	new_weight = request.POST['weight']
+#	new_priority = request.POST['priority']
+#
+#	print("new_order: ",new_order)
+#	print("new_weight: ",new_weight)
+#	print("new_priority: ",new_priority)
+#
+#	try:
+#		new_instance = Order.objects.create(weight=new_weight,priority=new_priority,status='QFP',placing_time=datetime.now())
+#	except (KeyError, Choice.DoesNotExist):
+#		return render(request, 'http://127.0.0.1:8000/asp/clinic_manager/1/home/1', {
+#			'error_message': "modifying database is unsuccessful"
+#		})
+#	new_instance.save()
 	# Always return an HttpResponseRedirect after successfully dealing
 	# with POST data. This prevents data from being posted twice if a
 	# user hits the Back button.
-	return HttpResponseRedirect(reverse('http://127.0.0.1:8000/asp/clinic_manager/'+id+'/view_order', args=(id)))
+#	return HttpResponseRedirect(reverse('http://127.0.0.1:8000/asp/clinic_manager/'+id+'/view_order', args=(id)))
+
+class CMConstructOrder(ListView):
+	def get(self, request):
+		num_order = int(request.GET.get('num',None));
+		
+		new_weight = float(request.GET.get('weight',None));
+		new_priority = request.GET.get('priority',None);
+		user_id = int(request.GET.get('user',None));
+
+		new_order = Order();
+		new_order.weight=new_weight;
+		new_order.priority=new_priority;
+		new_order.status='QFP';
+		new_order.placing_time=datetime.now();
+
+		user = User.objects.get(pk = user_id)
+
+		new_order.destination_id = user.clinic_id;
+		new_order.owner_id = user;
+
+		new_order.save();
+
+		queue = PriorityQueue();
+		queue.order_id = new_order;
+		queue.save();
+
+		item_list = []
+		quantity_list = []
+		photo_list = []
+
+		for i in range(num_order):
+			new_relation = OrderContainsItem();
+			itemid = int(request.GET.get('item'+str(i),None));
+			itemnum = int(request.GET.get('item'+str(i)+'num',None));
+
+			item = Item.objects.get(pk=itemid);
+
+			new_relation.order_id = new_order;
+			new_relation.item_id = item;
+			new_relation.item_quantity = itemnum;
+
+			item_list.append(item.item_name);
+			quantity_list.append(itemnum);
+			photo_list.append(item.photo_url);
+
+			new_relation.save();
+
+		template = loader.get_template('asp/view_order_info.html')
+		context = {
+			'num_order': num_order,
+			'new_weight': new_weight,
+			'new_priority': new_priority,
+			'user_id': user_id,
+			'item_list': item_list,
+			'quantity_list': quantity_list,
+			'photo_list': photo_list
+		}
+		return HttpResponse(template.render(context, request))
+
 
 class CMViewItems(ListView):
 	"""docstring for CMViewItems"""
@@ -59,7 +117,7 @@ class CMViewOrder(ListView):
 
 	def get_queryset(self):
 		self.id = self.kwargs['id']
-		return Order.objects.filter(order_id__pk=self.id).all()
+		return Order.objects.filter(owner_id__pk=self.id).all()
 		
 class DispatcherViewQueue(ListView):
 	def get(self, request):

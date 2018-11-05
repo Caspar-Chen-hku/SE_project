@@ -8,7 +8,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 
-<body onload="initiateVar()">
+<body onload="initiateVar({{user.pk}})">
   <div id='header'>
     <span id='client_info'>Hello, {{user.username}} </span>
 
@@ -111,7 +111,7 @@
                   <option value=2>Medium</option>
                   <option value=3 selected>Low</option>
             </select>            
-          <span id='construct' class='myButton' onclick="constructOrder({{user.pk}})"> Submit Order </span>
+          <span id='construct' class='myButton' onclick="location.href='http://127.0.0.1:8000/asp/clinic_manager/construct_order?user={{user.pk}}&num=1&priority=1&weight=8&item0=1&item0num=2'"> Submit Order </span>
         </div>
 
       </div>

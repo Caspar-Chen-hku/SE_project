@@ -18,9 +18,10 @@
         <table id='bookInfo_display' style='border-style: hidden; font-size: large; margin-top: 100px;'>
 
             <tr>
-                <th>Photo</th>
-                <th>Name</th> 
-                <th>Description</th>
+                <th align="center">Photo</th>
+                <th align="center">Name</th> 
+                <th align="right">Description</th>
+                <th align="right">Weight</th>
             </tr>
 
             {% for item in item_list %} 
@@ -37,6 +38,10 @@
 
               <td>
               {{item.item_description}} 
+              </td>
+
+              <td>
+                {{item.weight}}
               </td>
 
           </tr>
