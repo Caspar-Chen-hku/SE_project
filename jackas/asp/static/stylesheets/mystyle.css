@@ -110,8 +110,8 @@ a {
 }
 
 table img {
-    width: 180px;
-    height: 250px;
+    width: 150px;
+    height: 200px;
 }
 
 #items_display li{
@@ -145,6 +145,15 @@ table img {
     margin-left: 450px;
 }
 
+#order_info_display {
+    margin-left: 350px;
+}
+
+#order_info_display img {
+    width: 130px;
+    height: 160px;
+}
+
 #foot {
     margin-left: 400px;
 }
@@ -154,8 +163,8 @@ table img {
 }
 
 #side img {
-    width: 200px;
-    height: 250px;
+    width: 120px;
+    height: 140px;
     margin-left: 50px;
 }
 
@@ -273,7 +282,7 @@ table div {
 }
 
 table {
-    margin-top: 20px;
+    margin-top: 10px;
     width: 90%;
 }
 

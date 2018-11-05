@@ -56,9 +56,9 @@
         </table>
       </div>
 
-        <div id="display" style="margin-top: 150px;">
+        <div id="order_info_display" style="margin-top: 150px;">
 
-        <ul id='bookInfo_display' style='list-style-type: none; font-size: x-large; margin-top: 50px; float: left'>
+        <ul id='bookInfo_display' style='list-style-type: none; font-size: large; margin-top: 30px; float: left'>
 
             <li>Photo</li>
 
@@ -73,24 +73,24 @@
 
         </ul>
 
-        <ul id='bookInfo_display' style='list-style-type: none; font-size: x-large; margin-top: 50px; float: left'>
+        <ul id='bookInfo_display' style='list-style-type: none; font-size: large; margin-top: 30px; float: left'>
 
           <li>Name</li>
 
             {% for name in item_list %} 
-          <li style="margin-top: 100px">{{name}}</li>
+          <li style="margin-top: 130px">{{name}}</li>
             {% empty %} 
           <li>not available</li>
             {% endfor %} 
 
         </ul>
 
-        <ul id='bookInfo_display' style='list-style-type: none; font-size: x-large; margin-top: 50px; float: left'>
+        <ul id='bookInfo_display' style='list-style-type: none; font-size: large; margin-top: 30px; float: left'>
 
           <li>Quantity</li>
 
             {% for quantity in quantity_list %} 
-          <li style="margin-top: 100px">{{quantity}}</li>
+          <li style="margin-top: 130px">{{quantity}}</li>
             {% empty %} 
           <li>not available</li>
             {% endfor %} 

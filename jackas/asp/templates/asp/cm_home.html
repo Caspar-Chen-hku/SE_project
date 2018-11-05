@@ -33,7 +33,7 @@
               <a href="">Personal Information</a>
             </li> 
             <li class='myButton'>
-              <a href="http://127.0.0.1:8000/asp/clinic_manager/{{user.pk}}/home/1">Home</a>
+              <a href="1">Home</a>
             </li> 
             <li class='myButton'>
               <a href="http://127.0.0.1:8000/asp/clinic_manager/{{user.pk}}/view_order">View Orders</a>
@@ -49,7 +49,7 @@
         <ul id='category_list' style='list-style-type: none; float: left;'> 
             {% for category in categories %} 
             <li class='myButton'>
-              <a onclick="changeColor(this)" href="http://127.0.0.1:8000/asp/clinic_manager/1/home/{{category.pk}}" >
+              <a onclick="changeColor(this)" href="{{category.pk}}" >
                 {{ category.category_name }} 
               </a> 
             </li> 
