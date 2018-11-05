@@ -66,6 +66,27 @@
   box-shadow: 0 3px #666;
   transform: translateY(4px);
 }
+#cancel-button {
+  display: inline-block;
+
+  padding: 6px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #f44242;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px #999;
+}
+#cancel-button:hover {background-color: #7c2424}
+#cancel-button:active {
+  background-color: #7c2424;
+  box-shadow: 0 3px #666;
+  transform: translateY(4px);
+}
 </style>
 </head>
 
@@ -92,5 +113,8 @@
 </table>
 
 <h4 style="text-align: right;">Total Weight = {{total_weight}} KG</h4>
-<center><button onclick="location.href='confirm_dispatch'" id="confirm-button">Confirm</button>
-<button onclick="location.href='generate_csv'" id="csv-button">Generate CSV</button></center>
+<center>
+  <button onclick="location.href='home'" id="cancel-button">Cancel</button>
+  <button onclick="location.href='confirm_dispatch'" id="confirm-button">Confirm</button>
+  <button onclick="location.href='generate_csv'" id="csv-button">Generate CSV</button>
+</center>

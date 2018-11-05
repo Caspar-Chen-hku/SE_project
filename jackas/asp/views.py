@@ -42,19 +42,13 @@ class CMViewItems(ListView):
 		context['categories'] = Category.objects.all()
 		return context
 
-	#def get(self, request):
-	#	return HttpResponse('hello world')
-
 class CMViewItemInfo(ListView):
-
 	template_name = 'asp/view_item_info.html'
-
 	def get_queryset(self):
 		self.id = self.kwargs['id']
 		return Item.objects.filter(pk=self.id).all()
 
 class CMViewOrder(ListView):
-	"""docstring for CMConstructOrder"""
 	template_name = 'asp/view_order.html'
 
 	def get_queryset(self):
@@ -66,7 +60,9 @@ class DispatcherViewQueue(ListView):
 		queue_record_list = DispatchQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
 		template = loader.get_template('asp/dispatch_queue_list.html')
+		username = "James"
 		context = {
+			'username': username,
 			'order_list': order_list,
 		}
 		return HttpResponse(template.render(context, request))
