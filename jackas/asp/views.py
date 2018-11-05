@@ -46,14 +46,29 @@ class CMViewItemInfo(ListView):
 	template_name = 'asp/view_item_info.html'
 	def get_queryset(self):
 		self.id = self.kwargs['id']
-		return Item.objects.filter(pk=self.id).all()
+		return Item.objects.filter(pk = self.id).all()
 
 class CMViewOrder(ListView):
 	template_name = 'asp/view_order.html'
 
 	def get_queryset(self):
 		self.id = self.kwargs['id']
-		return Order.objects.filter(order_id__pk=self.id).all()
+		return Order.objects.filter(pk = self.id).all()
+
+	def get_context_data(self, **kwargs): 
+		self.id = self.kwargs['id']
+		context = super().get_context_data(**kwargs) 
+		context['user'] = User.objects.get(pk = self.id)
+		all_orders = Order.objects.filter(owner_id = context['user']).all()
+
+		canceled_orders = [order for order in all_orders if order.status == 'CA']
+		normal_orders = [order for order in all_orders if not order.status == 'CA']
+		delivered_orders = [order for order in normal_orders if order.status == 'DE']
+		processing_orders = [order for order in normal_orders if not order.status == 'DE']
+		canceled_orders.extend(delivered_orders)
+		context['processing_orders'] = processing_orders
+		context['other_orders'] = canceled_orders
+		return context
 		
 class DispatcherViewQueue(ListView):
 	def get(self, request):
