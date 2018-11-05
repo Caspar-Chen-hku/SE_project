@@ -5,6 +5,14 @@ var maxWeight = 25.0;
 var currentCat = "";
 
 function constructOrder(userid){
+
+    if (totalWeight<0.1){
+        document.getElementById("warning").innerHTML = "No item chosen!";
+        return;
+    }else if (totalWeight>maxWeight){
+        document.getElementById("warning").innerHTML = "Order too heavy!";
+        return;
+    }
     num_order = Object.keys(currentOrder).length;
     priority = document.getElementById("priority_list").value;
 
@@ -18,6 +26,7 @@ function constructOrder(userid){
         for (key in currentOrder){
             myform.append($('<input type="hidden" name="item'+i+'" value='+ key + '>'))
                   .append($('<input type="hidden" name="item'+i+'num" value='+ currentOrder[key] + '>'));
+            i++;
         }
 
         myform.appendTo($(document.body)) //it has to be added somewhere into the <body>

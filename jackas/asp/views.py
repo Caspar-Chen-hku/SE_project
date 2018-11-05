@@ -77,7 +77,7 @@ class CMConstructOrder(ListView):
 			'num_order': num_order,
 			'new_weight': new_weight,
 			'new_priority': new_priority,
-			'user': user,
+			'user_id': user_id,
 			'item_list': item_list,
 			'quantity_list': quantity_list,
 			'photo_list': photo_list
@@ -155,7 +155,54 @@ class DispatcherViewPackage(ListView):
 class DispatcherViewItinerary(ListView):
 	"""docstring for DispatcherViewQueue"""
 	def get(self, request):
-		return HttpResponse('hello world')
+		clinic_distance_list= Distance.objects.all()
+		clinic_list=Clinic.objects.all()
+		distance={}
+		#			require Queen Mary's clinic_id be 1
+		for elem in clinic_distance_list:
+			distance[(elem.source_clinic_id,elem.destination_clinic_id)]=distance[(elem.destination_clinic_id,elem.source_clinic_id)]=elem.distance
+		clinic={}
+		#require这边clinic_id和上面的对应
+		for elem in clinic_list:
+			clinic[elem.pk]=(elem.latitude,elem.longitude,elem.altitude,elem.distance_to_hospital)
+
+		package = request.POST.get('package',None)# a list of order objects
+		route_list=[]
+		for order in package:
+			route_list.append(order.destination_id)
+		routes_order=genRoutes(len(route_list),route_list)
+		shortest=calCosts(routes_order,distance,clinic)
+		#with open('itenerary.csv', mode='w') as itenerary_file:
+		response = HttpResponse(content_type='text/csv')
+		response['Content-Disposition'] = 'attachment; filename="itenerary.csv"'
+		writer=csv.writer(response)
+		for item in shortest[0]:
+			writer.writerow('latitude longitude and altitude#',clinic[item][0],clinic[item][1],clinic[item][2])
+		return response
+
+	def calCosts(routes, distance,clinic_list):
+		travelCosts = []
+
+		for route in routes:
+			travelCost = 0
+			travelCost +=clinic_list[route[0]][3]
+			travelCost +=clinic_list[route[-1]][3]
+			#Sums up the travel cost
+			for i in range(1,len(route)):
+				#takes an element of route, uses it to find the corresponding coords and calculates the distance
+				travelCost += distance[(route[i-1],route[i])]
+			travelCosts.append(travelCost)
+		#pulls out the smallest travel cost
+		smallestCost = min(travelCosts)
+		shortest = (routes[travelCosts.index(smallestCost)], smallestCost)
+		return shortest
+
+
+	def genRoutes(routeLength,route_list):
+		#uses built-in itertools to generate permutations
+		routes = list(map(list, itertools.permutations(route_list)))
+		#inserts the home city, must be the first city in every route
+		return routes
 
 class DispatcherConfirmDispatch(ListView):
 	"""docstring for DispatcherViewQueue"""
