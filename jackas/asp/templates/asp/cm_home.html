@@ -33,7 +33,7 @@
               <a href="">Personal Information</a>
             </li> 
             <li class='myButton'>
-              <a href="1">Home</a>
+              <a href="3">Home</a>
             </li> 
             <li class='myButton'>
               <a href="http://127.0.0.1:8000/asp/clinic_manager/{{user.pk}}/view_order">View Orders</a>
@@ -71,10 +71,10 @@
             <a href="http://127.0.0.1:8000/asp/clinic_manager/item_info/{{item.pk}}" target="_blank">
               <img src="{% static "" %}{{item.photo_url}}" class='myButton' >
             </a>           
-            <div>{{item.item_name}}</div>
+            <p>{{item.item_name}}</p>
             Quantity:
             <select id='quantity_list' onchange="updateOrder({{item.pk}},{{item.weight}},this.value)">
-                {% for i in "xxxxxxxxxx" %}
+                {% for i in "xxxxxxxxxxxxxxxxxxxx" %}
                   <option value={{forloop.counter0}}>{{forloop.counter0}}</option>
                 {% endfor %}
             </select>
