@@ -154,7 +154,7 @@ class DispatcherViewPackage(ListView):
 		
 class DispatcherViewItinerary(ListView):
 	"""docstring for DispatcherViewQueue"""
-	def get(self, request):
+	def post(self, request):
 		clinic_distance_list= Distance.objects.all()
 		clinic_list=Clinic.objects.all()
 		distance={}
@@ -166,7 +166,7 @@ class DispatcherViewItinerary(ListView):
 		for elem in clinic_list:
 			clinic[elem.pk]=(elem.latitude,elem.longitude,elem.altitude,elem.distance_to_hospital)
 
-		package = request.POST.get('package',None)# a list of order objects
+		package = request.POST.get('package', None)# a list of order objects
 		route_list=[]
 		for order in package:
 			route_list.append(order.destination_id)

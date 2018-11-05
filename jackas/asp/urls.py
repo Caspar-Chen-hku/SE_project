@@ -24,5 +24,17 @@ urlpatterns = [
 		name='dispatcher-itinerary'),
 	path('dispatcher/confirm_dispatch',
 		views.DispatcherConfirmDispatch.as_view(),
-		name='dispatcher-confirm')
+		name='dispatcher-confirm'),
+	path('status_change_to/qfd/<int:orderid>',
+		views.ChangeStatus.toQFD(),
+		name='change-status-to-qfd'),
+	path('status_change_to/di/<int:orderid>',
+		views.ChangeStatus.toDI(),
+		name='change-status-to-di'),
+	path('status_change_to/de/<int:orderid>',
+		views.ChangeStatus.toDE(),
+		name='change-status-to-de'),
+	path('status_change_to/ca/<int:orderid>',
+		views.ChangeStatus.toCA(),
+		name='change-status-to-ca')
 ]
