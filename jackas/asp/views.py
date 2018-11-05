@@ -209,5 +209,5 @@ class DispatcherViewItinerary(ListView):
 
 class DispatcherConfirmDispatch(ListView):
 	"""docstring for DispatcherViewQueue"""
-	def get(self, request):
-		return HttpResponse('hello world')
+	def get(self,request):
+		return HttpResponseRedirect('http://127.0.0.1:8000/asp/dispatcher/home')
