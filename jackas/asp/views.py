@@ -165,7 +165,6 @@ class DispatcherViewItinerary(ListView):
 		#require这边clinic_id和上面的对应
 		for elem in clinic_list:
 			clinic[elem.pk]=(elem.latitude,elem.longitude,elem.altitude,elem.distance_to_hospital)
-			clinic_id +=1
 
 		package = request.POST.get('package',None)# a list of order objects
 		route_list=[]
@@ -178,7 +177,7 @@ class DispatcherViewItinerary(ListView):
 		response['Content-Disposition'] = 'attachment; filename="itenerary.csv"'
 		writer=csv.writer(response)
 		for item in shortest[0]:
-			writer.writerow('latitude longitude and altitude#',clinic[item])
+			writer.writerow('latitude longitude and altitude#',clinic[item][0],clinic[item][1],clinic[item][2])
 		return response
 
 	def calCosts(routes, distance,clinic_list):
@@ -186,8 +185,8 @@ class DispatcherViewItinerary(ListView):
 
 		for route in routes:
 			travelCost = 0
-			travelCost +=clinic_list[route[0]][4]
-			travelCost +=clinic_list[route[-1]][4]
+			travelCost +=clinic_list[route[0]][3]
+			travelCost +=clinic_list[route[-1]][3]
 			#Sums up the travel cost
 			for i in range(1,len(route)):
 				#takes an element of route, uses it to find the corresponding coords and calculates the distance
