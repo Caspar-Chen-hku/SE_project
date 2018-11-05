@@ -2,6 +2,7 @@
 var totalWeight = 0.0;
 var currentOrder = {};
 var maxWeight = 25.0;
+var currentCat = "";
 
 function constructOrder(){
     console.log("clicked");
@@ -11,6 +12,19 @@ function initiateVar(){
     totalWeight = 0.0;
     currentOrder = {};
     maxWeight = 25.0;
+}
+
+function changeColor(category){
+    categories = document.getElementById("category_list").childNodes;
+    for (cat in categories){
+        if (cat.childNodes[0]==category){
+            cat.style.backgroundColor = "#bbbbbb";
+        }else{
+            cat.style.backgroundColor = "#eeeeee";
+        }
+    }
+    currentCat = category.innerHTML;
+    document.getElementById("cat").innerHTML = currentCat;
 }
 
 function updateVar(itemid, quantity){

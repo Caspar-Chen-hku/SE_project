@@ -77,7 +77,7 @@ class CMConstructOrder(ListView):
 			'num_order': num_order,
 			'new_weight': new_weight,
 			'new_priority': new_priority,
-			'user_id': user_id,
+			'user': user,
 			'item_list': item_list,
 			'quantity_list': quantity_list,
 			'photo_list': photo_list

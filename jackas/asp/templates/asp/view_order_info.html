@@ -15,7 +15,31 @@
 
   <div id='content'>
 
-        <table  style='font-size: large'>
+        <div id='personal' style='width: 20%'>
+
+        <div style="margin-left: 40px;"><h3>Personal Info</h3></div>
+        <div id='profile'>
+            <div class='myButton' id='profile_btn'>
+                {{user.username}}
+            </div>
+            <div class='myButton'>Role: {{user.role}}</div>
+        </div>
+        <hr style="border: 1px solid black;" />
+
+        <ul id='personal_list' style='list-style-type: none'> 
+            <li class='myButton'> 
+                Personal Information 
+            </li> 
+            <li class='myButton'>Home</li> 
+            <li class='myButton'>View Orders</li>
+        </ul> 
+
+      </div>
+
+      <div id="side" style="font-size: large; width: 50%;">
+
+        <div style="border-left: 2px solid black; height: 600px; float: left"></div>
+        <table  id="side" style='font-size: large; '>
 
           <tr>
             <th>Number of Items</th>
@@ -30,6 +54,9 @@
           </tr>
 
         </table>
+      </div>
+
+        <div id="display" style="margin-top: 150px;">
 
         <ul id='bookInfo_display' style='list-style-type: none; font-size: x-large; margin-top: 50px; float: left'>
 
@@ -70,9 +97,11 @@
             
         </ul>
 
-        <div id='foot' style="margin-left: 800px; margin-top: 400px">
+      </div>
+
+        <div id='foot' style="margin-left: 1000px; margin-top: 400px">
            
-          <span id='view_order' class='myButton' onclick="location.href='http://127.0.0.1:8000/asp/clinic_manager/{{user_id}}/view_order'"> To View Order Page</span>
+          <span id='view_order' class='myButton' onclick="location.href='http://127.0.0.1:8000/asp/clinic_manager/{{user.pk}}/view_order'" style="border-style: solid;"> To View Order Page</span>
 
         </div>
 

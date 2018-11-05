@@ -30,10 +30,14 @@
 
         <ul id='personal_list' style='list-style-type: none'> 
             <li class='myButton'> 
-                Personal Information 
+              <a href="">Personal Information</a>
             </li> 
-            <li class='myButton'>Home</li> 
-            <li class='myButton'>View Orders</li>
+            <li class='myButton'>
+              <a href="http://127.0.0.1:8000/asp/clinic_manager/{{user.pk}}/home/1">Home</a>
+            </li> 
+            <li class='myButton'>
+              <a href="http://127.0.0.1:8000/asp/clinic_manager/{{user.pk}}/view_order">View Orders</a>
+            </li>
         </ul> 
 
       </div>
@@ -45,7 +49,7 @@
         <ul id='category_list' style='list-style-type: none; float: left;'> 
             {% for category in categories %} 
             <li class='myButton'>
-              <a href="http://127.0.0.1:8000/asp/clinic_manager/1/home/{{category.pk}}">
+              <a onclick="changeColor(this)" href="http://127.0.0.1:8000/asp/clinic_manager/1/home/{{category.pk}}" >
                 {{ category.category_name }} 
               </a> 
             </li> 
@@ -57,6 +61,8 @@
       </div>
 
       <div id='display' style='width: 60%'>
+
+        <div id="cat" style="margin-left: 150px;">Pain Reliever</div>
 
         <ul id='items_display' style='list-style-type: none'>
             {% for item in item_list %} 
@@ -111,7 +117,7 @@
                   <option value=2>Medium</option>
                   <option value=3 selected>Low</option>
             </select>            
-          <span id='construct' class='myButton' onclick="location.href='http://127.0.0.1:8000/asp/clinic_manager/construct_order?user={{user.pk}}&num=1&priority=1&weight=8&item0=1&item0num=2'"> Submit Order </span>
+          <span id='construct' class='myButton' onclick="constructOrder({{user.pk}})"> Submit Order </span>
         </div>
 
       </div>
