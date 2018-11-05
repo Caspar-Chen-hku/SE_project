@@ -175,6 +175,7 @@ class DispatcherViewItinerary(ListView):
 		shortest=calCosts(routes_order,distance,clinic)
 		#with open('itenerary.csv', mode='w') as itenerary_file:
 		response = HttpResponse(content_type='text/csv')
+		response['Content-Disposition'] = 'attachment; filename="itenerary.csv"'
 		writer=csv.writer(response)
 		for item in shortest[0]:
 			writer.writerow('latitude longitude and altitude#',clinic[item])
