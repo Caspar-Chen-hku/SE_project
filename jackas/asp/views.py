@@ -319,6 +319,8 @@ class DispatcherConfirmDispatch(ListView):
 		for order in package:
 			order_to_update = Order.objects.get(id=order.id)
 			order_to_update.status = 'DI'
+			order_to_update.dispacthed_time = datetime.now()
+			order_to_update.dispatcher_id = self.id
 			order_to_update.save()
 			order_to_remove_from_queue = DispatchQueue.objects.get(order_id=order)
 			order_to_remove_from_queue.delete()
