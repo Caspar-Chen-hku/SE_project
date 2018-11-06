@@ -6,6 +6,7 @@ from django.template import loader
 from django.http import HttpResponseRedirect
 from asp.models import User, Clinic, Token, Order, Item, OrderContainsItem, PriorityQueue, DispatchQueue, Category, Distance
 import itertools, csv
+from django.shortcuts import redirect
 
 #def constructOrder(request, id):
 #	new_order = request.POST['neworder']
@@ -100,7 +101,7 @@ class CMViewItems(ListView):
 		context = super().get_context_data(**kwargs) 
 		context['user'] = User.objects.get(pk = self.id) 
 		context['categories'] = Category.objects.all()
-		print(context['categories'])
+		context['cat'] = Category.objects.get(pk = self.category)
 		return context
 
 class CMViewItemInfo(ListView):
@@ -253,9 +254,9 @@ class DispatcherViewItinerary(ListView):
 		for elem in clinic_distance_list:
 			distance[(elem.source_clinic_id.id, elem.destination_clinic_id.id)] = distance[(elem.destination_clinic_id.id,elem.source_clinic_id.id)] = elem.distance
 		print(distance)
+
 		# generate clinic list
 		clinic = {}
-		# require这边clinic_id和上面的对应
 		for elem in clinic_list:
 			clinic[elem.pk] = (elem.latitude, elem.longitude, elem.altitude, elem.distance_to_hospital)
 
@@ -273,7 +274,7 @@ class DispatcherViewItinerary(ListView):
 		output_name = 'itinerary'
 		file_ext = 'csv'
 		response['Content-Disposition'] = 'attachment; filename="itenerary.csv"'
-		# response['Content-Disposition'] = 'attachment;filename="%s.%s"' % (output_name.replace('"', '\"'), file_ext)
+		
 		writer = csv.writer(response)
 		writer.writerow(['latitude', 'longitude', 'altitude'])
 		for item in shortest[0]:
@@ -286,12 +287,12 @@ class DispatcherViewItinerary(ListView):
 			travelCost = 0
 			travelCost += clinic_list[route[0]][3]
 			travelCost += clinic_list[route[-1]][3]
-			#Sums up the travel cost
+			# Sums up the travel cost
 			for i in range(1, len(route)):
-				#takes an element of route, uses it to find the corresponding coords and calculates the distance
+				# takes an element of route, uses it to find the corresponding coords and calculates the distance
 				travelCost += distance[(route[i-1], route[i])]
 			travelCosts.append(travelCost)
-		#pulls out the smallest travel cost
+		# pulls out the smallest travel cost
 		smallestCost = min(travelCosts)
 		print(smallestCost)
 		shortest = (routes[travelCosts.index(smallestCost)], smallestCost)
@@ -304,14 +305,9 @@ class DispatcherViewItinerary(ListView):
 		return routes
 
 class DispatcherConfirmDispatch(ListView):
-	template_name = 'asp/dispatch_queue_list.html'
-
-	def get_queryset(self):
-		self.id = self.kwargs['id']
-
-	def get_context_data(self, **kwargs): 
-		context = super().get_context_data(**kwargs) 
-		context['user'] = User.objects.get(pk = self.id)
+	def get(self, request, *args, **kwargs):
+		self.id = kwargs['id']
+		
 		queue_record_list = DispatchQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
 		package = []
@@ -334,7 +330,4 @@ class DispatcherConfirmDispatch(ListView):
 			order_to_remove_from_queue = DispatchQueue.objects.get(order_id = order)
 			order_to_remove_from_queue.delete()
 		
-		queue_record_list = DispatchQueue.objects.all()
-		order_list = [elem.order_id for elem in queue_record_list]
-		context['order_list'] = order_list
-		return context
+		return redirect('/asp/dispatcher/'+str(self.id)+'/home')
