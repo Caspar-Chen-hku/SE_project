@@ -8,7 +8,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 
-<body onload="initiateVar({{user.pk}})">
+<body onload="initiateVar({{user.pk}},{{cat.category_name}})">
   <div id='header'>
     <span id='client_info'>Hello, {{user.username}} </span>
 
@@ -33,7 +33,7 @@
               <a href="">Personal Information</a>
             </li> 
             <li class='myButton'>
-              <a href="3">Home</a>
+              <a href="3" style="background-color: #adadad">Home</a>
             </li> 
             <li class='myButton'>
               <a href="http://127.0.0.1:8000/asp/clinic_manager/{{user.pk}}/view_order">View Orders</a>
@@ -49,7 +49,7 @@
         <ul id='category_list' style='list-style-type: none; float: left;'> 
             {% for category in categories %} 
             <li class='myButton'>
-              <a onclick="changeColor(this)" href="{{category.pk}}" >
+              <a href="{{category.pk}}" >
                 {{ category.category_name }} 
               </a> 
             </li> 
@@ -62,7 +62,7 @@
 
       <div id='display' style='width: 60%'>
 
-        <div id="cat" style="margin-left: 150px;">Pain Reliever</div>
+        <div id="cat" style="margin-left: 150px;">IV Fluids</div>
 
         <ul id='items_display' style='list-style-type: none'>
             {% for item in item_list %} 
@@ -71,7 +71,7 @@
             <a href="http://127.0.0.1:8000/asp/clinic_manager/item_info/{{item.pk}}" target="_blank">
               <img src="{% static "" %}{{item.photo_url}}" class='myButton' >
             </a>           
-            <p>{{item.item_name}}</p>
+            <p style="white-space: initial;">{{item.item_name}}</p>
             Quantity:
             <select id='quantity_list' onchange="updateOrder({{item.pk}},{{item.weight}},this.value)">
                 {% for i in "xxxxxxxxxxxxxxxxxxxx" %}

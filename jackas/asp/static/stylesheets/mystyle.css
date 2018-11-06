@@ -105,8 +105,8 @@ a {
 }
 
 #items_display img{
-    width: 120px;
-    height: 140px;
+    width: 140px;
+    height: 160px;
 }
 
 table img {
@@ -142,7 +142,7 @@ table img {
 }
 
 #display {
-    margin-left: 450px;
+    margin-left: 480px;
 }
 
 #order_info_display {

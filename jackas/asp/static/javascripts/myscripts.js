@@ -34,10 +34,15 @@ function constructOrder(userid){
               .submit();
 }
 
-function initiateVar(){
-    totalWeight = 0.0;
-    currentOrder = {};
-    maxWeight = 25.0;
+function initiateVar(userid, cat_name){
+    categories = document.getElementById("category_list").childNodes;
+    for (cat in categories){
+        if (cat.childNodes[0].innerHTML==cat_name){
+            cat.style.backgroundColor = "#bbbbbb";
+        }else{
+            cat.style.backgroundColor = "#eeeeee";
+        }
+    }
 }
 
 function calculateTotalWeight(){
@@ -46,19 +51,6 @@ function calculateTotalWeight(){
         w += currentOrder[key] * weights[key];
     }
     return parseFloat(w.toFixed(2));
-}
-
-function changeColor(category){
-    categories = document.getElementById("category_list").childNodes;
-    for (cat in categories){
-        if (cat.childNodes[0]==category){
-            cat.style.backgroundColor = "#bbbbbb";
-        }else{
-            cat.style.backgroundColor = "#eeeeee";
-        }
-    }
-    currentCat = category.innerHTML;
-    document.getElementById("cat").innerHTML = currentCat;
 }
 
 function updateVar(itemid, quantity){

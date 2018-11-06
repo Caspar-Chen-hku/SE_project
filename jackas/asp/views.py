@@ -100,6 +100,7 @@ class CMViewItems(ListView):
 		context = super().get_context_data(**kwargs) 
 		context['user'] = User.objects.get(pk = self.id) 
 		context['categories'] = Category.objects.all()
+		context['cat'] = Category.objects.get(pk = self.category)
 		return context
 
 class CMViewItemInfo(ListView):
