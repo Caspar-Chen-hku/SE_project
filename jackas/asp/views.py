@@ -100,6 +100,7 @@ class CMViewItems(ListView):
 		context = super().get_context_data(**kwargs) 
 		context['user'] = User.objects.get(pk = self.id) 
 		context['categories'] = Category.objects.all()
+		print(context['categories'])
 		return context
 
 class CMViewItemInfo(ListView):
@@ -124,6 +125,12 @@ class CMViewOrder(ListView):
 		delivered_orders = [order for order in normal_orders if order.status == 'DE']
 		processing_orders = [order for order in normal_orders if not order.status == 'DE']
 		canceled_orders.extend(delivered_orders)
+
+		for order in processing_orders:
+			order.priority = order.get_priority_display()
+		for order in canceled_orders:
+			order.priority = order.get_priority_display()
+
 		context['processing_orders'] = processing_orders
 		context['other_orders'] = canceled_orders
 		return context
@@ -190,6 +197,8 @@ class DispatcherViewQueue(ListView):
 		context['user'] = User.objects.get(pk = self.id)
 		queue_record_list = DispatchQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
+		for order in order_list:
+			order.priority = order.get_priority_display()
 		context['order_list'] = order_list
 		return context
 
@@ -242,8 +251,8 @@ class DispatcherViewItinerary(ListView):
 		clinic_list = Clinic.objects.all()
 		distance = {}
 		for elem in clinic_distance_list:
-			distance[(elem.source_clinic_id, elem.destination_clinic_id)] = distance[(elem.destination_clinic_id,elem.source_clinic_id)] = elem.distance
-		
+			distance[(elem.source_clinic_id.id, elem.destination_clinic_id.id)] = distance[(elem.destination_clinic_id.id,elem.source_clinic_id.id)] = elem.distance
+		print(distance)
 		# generate clinic list
 		clinic = {}
 		# require这边clinic_id和上面的对应
@@ -319,10 +328,10 @@ class DispatcherConfirmDispatch(ListView):
 		for order in package:
 			order_to_update = Order.objects.get(id=order.id)
 			order_to_update.status = 'DI'
-			order_to_update.dispacthed_time = datetime.now()
-			order_to_update.dispatcher_id = self.id
+			order_to_update.dispatching_time = datetime.now()
+			order_to_update.dispatcher_id = User.objects.get(pk = self.id)
 			order_to_update.save()
-			order_to_remove_from_queue = DispatchQueue.objects.get(order_id=order)
+			order_to_remove_from_queue = DispatchQueue.objects.get(order_id = order)
 			order_to_remove_from_queue.delete()
 		
 		queue_record_list = DispatchQueue.objects.all()

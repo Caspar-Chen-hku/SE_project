@@ -49,9 +49,7 @@
         <ul id='category_list' style='list-style-type: none; float: left;'> 
             {% for category in categories %} 
             <li class='myButton'>
-              <a onclick="changeColor(this)" href="{{category.pk}}" >
                 {{ category.category_name }} 
-              </a> 
             </li> 
             {% empty %} 
             <li>Categories not available.</li> 
