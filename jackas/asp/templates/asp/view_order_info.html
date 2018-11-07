@@ -15,7 +15,7 @@
 
   <div id='content'>
 
-        <div id='personal' style='width: 20%'>
+   <div id='personal' style='width: 20%'>
 
         <div style="margin-left: 40px;"><h3>Personal Info</h3></div>
         <div id='profile'>
@@ -28,18 +28,21 @@
 
         <ul id='personal_list' style='list-style-type: none'> 
             <li class='myButton'> 
-                Personal Information 
+              <a href="">Personal Information</a>
             </li> 
-            <li class='myButton'>Home</li> 
-            <li class='myButton'>View Orders</li>
+            <li class='myButton'>
+              <a href="http://127.0.0.1:8000/asp/clinic_manager/{{user.pk}}/home/3" style="background-color: #adadad">Home</a>
+            </li> 
+            <li class='myButton'>
+              <a href="http://127.0.0.1:8000/asp/clinic_manager/{{user.pk}}/view_order">View Orders</a>
+            </li>
         </ul> 
 
       </div>
 
       <div id="side" style="font-size: large; width: 50%;">
 
-        <div style="border-left: 2px solid black; height: 600px; float: left"></div>
-        <table  id="side" style='font-size: large; '>
+        <table id="side" style='font-size: large; '>
 
           <tr>
             <th>Number of Items</th>
@@ -98,9 +101,9 @@
         </ul>
 
       </div>
-        <div id='foot' style="margin-left: 800px; margin-top: 400px">
+        <div id='foot_btn'>
            
-          <span id='view_order' class='myButton' onclick="location.href='/asp/clinic_manager/{{user_id}}/view_order'" style="border-style: solid;"> To View Order Page</span>
+          <span id='view_order' class='myButton' onclick="location.href='/asp/clinic_manager/{{user_id}}/view_order'" style="border-style: solid;">View Orders</span>
 
         </div>
 

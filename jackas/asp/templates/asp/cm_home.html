@@ -43,7 +43,6 @@
       </div>
 
       <div id='side' style='width: 15%'>
-        <div style="border-left: 2px solid black; float: left"></div>
 
         <h4 style="margin-left: 40px;">Category List</h4>
         <ul id='category_list' style='list-style-type: none; float: left;'> 
@@ -85,11 +84,11 @@
         </ul>
     </div>
 
-      <div id='foot' style="margin-left: 400px">
+      <div id='foot' style="margin-left: 450px">
 
         <div id='current_cart'>
             <span> 
-                Total weight: <input type="number" id="totalWeight" name="totalWeight" value="0" disabled style="width: 80px; margin-left: 30px;" /> 
+                Total weight: <input type="number" id="totalWeight" name="totalWeight" value="0" disabled style="width: 80px;" /> 
             </span>
 
             <span>
@@ -99,7 +98,7 @@
             <span id="warning"></span>       
         </div>
 
-        <div id="pages">
+        <div id="pages" style="margin-top: 20px; border-bottom-style: solid;">
           <span id='previous' class='myButton' >&lt Previous Page</span>
           <span id='choose_page'>Page 1
             <select id='page_list'>
@@ -111,7 +110,8 @@
           <span id='next' class='myButton'>Next Page &gt </span>
         </div>
 
-        <div id="construct_order" style="margin-top: 20px; margin-left: 300px;">
+        <div id="construct_order" style="margin-top: 20px; margin-left: 100px;">
+            Select priority:
             <select id='priority_list' style="width: 80px;">
                   <option value=1>High</option>
                   <option value=2>Medium</option>
