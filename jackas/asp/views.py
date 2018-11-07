@@ -331,3 +331,19 @@ class DispatcherConfirmDispatch(ListView):
 			order_to_remove_from_queue.delete()
 		
 		return redirect('/asp/dispatcher/'+str(self.id)+'/home')
+
+class WarehousePersonnelHome(ListView):
+	def get(self, request, *args, **kwargs):
+		pass
+
+class WarehousePersonnelProcessOrder(ListView):
+	def get(self, request, *args, **kwargs):
+		pass
+
+class WarehousePersonnelConfirmOrder(ListView):
+	def get(self, request, *args, **kwargs):
+		pass
+
+class WarehousePersonnelGenerateSL(ListView):
+	def get(self, request, *args, **kwargs):
+		pass

@@ -30,5 +30,17 @@ urlpatterns = [
 		name='dispatcher-itinerary'),
 	path('dispatcher/<int:id>/confirm_dispatch',
 		views.DispatcherConfirmDispatch.as_view(),
-		name='dispatcher-confirm')
+		name='dispatcher-confirm'),
+	path('warehouse_personnel/<int:id>/home',
+		views.WarehousePersonnelHome.as_view(),
+		name='wp-home'),
+	path('warehouse_personnel/<int:id>/process_order',
+		views.WarehousePersonnelProcessOrder.as_view(),
+		name='wp-process-order'),
+	path('warehouse_personnel/<int:id>/confirm_process',
+		views.WarehousePersonnelConfirmOrder.as_view(),
+		name='wp-confirm-process'),
+	path('warehouse_personnel/<int:id>/generate_shipping_label',
+		views.WarehousePersonnelGenerateSL.as_view(),
+		name='wp-generate-sl'),
 ]
