@@ -51,10 +51,10 @@
               <a href="">Personal Information</a>
             </li> 
             <li class='myButton'>
-              <a href="home/1">Home</a>
+              <a href="/asp/clinic_manager/{{user.id}}/home/1">Home</a>
             </li> 
             <li class='myButton'>
-              <a href="view_order">View Orders</a>
+              <a href="/asp/clinic_manager/{{user.id}}/view_order">View Orders</a>
             </li>
         </ul> 
 
@@ -79,7 +79,9 @@
             <td>Under Construction</td>
             <td>{{order.status}}</td>
             <td>
+                {% if order.status == 'DI' %}
                 <button onclick="location.href='/asp/clinic_manager/{{user.id}}/confirm_order/{{order.id}}'">Delivered</button>
+                {% endif %}
                 {% if order.status == 'QFP' %}
                     <button onclick="location.href='/asp/clinic_manager/{{user.id}}/cancel_order/{{order.id}}'">Cancel</button>
                 {% endif %}
