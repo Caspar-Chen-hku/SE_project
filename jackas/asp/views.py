@@ -29,6 +29,60 @@ from django.shortcuts import redirect
 	# user hits the Back button.
 #	return HttpResponseRedirect(reverse('http://127.0.0.1:8000/asp/clinic_manager/'+id+'/view_order', args=(id)))
 
+class HomePage(ListView):
+	def get(self,request):
+		template = loader.get_template('asp/homepage.html')
+		num_user = len(User.objects.all())
+		context = {
+			'num_user': num_user
+		}
+		return HttpResponse(template.render(context, request))
+
+class PersonalInfo(ListView):
+	def get(self, request):
+
+		if not request.user.is_authenticated:
+			template = loader.get_template('registration/login.html')
+			context = {
+				'msg': "Your account is not authenticated"
+			}
+			return HttpResponseRedirect(template.render(context, request))
+
+		name = request.user.username
+		user = User.objects.get(username = name)
+		userid = user.pk
+
+		context = {}
+
+		template = loader.get_template('asp/personal_info.html')
+		context['user']=user
+		return HttpResponse(template.render(context, request))
+
+class ChangeInfo(ListView):
+	def get(self, request):
+		username = request.GET.get('username',None)
+
+		firstname = request.GET.get('firstname',None)
+		lastname = request.GET.get('lastname',None)
+		email = request.GET.get('email',None)
+		clinic_address = request.GET.get('clinic_address',None)
+		clinic_name = request.GET.get('clinic_address',None)
+		password = request.GET.get('password',None)
+
+		target_user = User.objects.get(username=username)
+
+		target_user.firstname = firstname
+		target_user.lastname = lastname
+		target_user.email = email
+		target_user.clinic_address = clinic_address
+		target_user.clinic_name = clinic_name
+		target_user.password = password
+
+		target_user.save()
+
+		return redirect('/asp/personal_info')
+
+
 class CMConstructOrder(ListView):
 	def get(self, request):
 		num_order = int(request.GET.get('num',None));
