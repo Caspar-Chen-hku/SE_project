@@ -121,7 +121,7 @@ table img {
 }
 
 #content {
-    border-style: solid;
+    border-top-style: solid;
     min-height: 600px;
 }
 
@@ -129,6 +129,8 @@ table img {
     position: absolute;
     top: 50px;
     left: 10px;
+    min-height: 600px;
+    border-right-style: solid;
 }
 
 #personal_list {
@@ -141,12 +143,18 @@ table img {
     left: 280px;
 }
 
+#foot_btn {
+    position: absolute;
+    right: 50px;
+    bottom: 50px;
+}
+
 #display {
     margin-left: 480px;
 }
 
 #order_info_display {
-    margin-left: 350px;
+    margin-left: 300px;
 }
 
 #order_info_display img {
@@ -155,11 +163,12 @@ table img {
 }
 
 #foot {
-    margin-left: 400px;
+    margin-right: 50px;
+    margin-bottom: 50px;
 }
 
 #foot span {
-    margin: 30px 50px;
+    margin: 30px 30px;
 }
 
 #side img {
