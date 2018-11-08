@@ -66,7 +66,7 @@ class ChangeInfo(ListView):
 		lastname = request.GET.get('lastname',None)
 		email = request.GET.get('email',None)
 		clinic_address = request.GET.get('clinic_address',None)
-		clinic_name = request.GET.get('clinic_address',None)
+		clinic_name = request.GET.get('clinic_name',None)
 		password = request.GET.get('password',None)
 
 		target_user = User.objects.get(username=username)
@@ -74,11 +74,14 @@ class ChangeInfo(ListView):
 		target_user.firstname = firstname
 		target_user.lastname = lastname
 		target_user.email = email
-		target_user.clinic_address = clinic_address
-		target_user.clinic_name = clinic_name
+
+		target_clinic = target_user.clinic_id
+		target_clinic.clinic_address = clinic_address
+		target_clinic.clinic_name = clinic_name
 		target_user.password = password
 
 		target_user.save()
+		target_clinic.save()
 
 		return redirect('/asp/personal_info')
 
