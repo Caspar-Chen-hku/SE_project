@@ -120,4 +120,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-LOGIN_REDIRECT_URL = '/asp/personal_info'
+LOGIN_REDIRECT_URL = '/asp/personal_home'

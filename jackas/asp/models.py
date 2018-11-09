@@ -16,7 +16,7 @@ class User(models.Model):
 	lastname = models.CharField(max_length=50)
 	password = models.CharField(max_length=20)
 	email = models.CharField(max_length=50)
-	ROLE_CHOICES = [['CM', 'Clinic Manager'], ['WP', 'Warehouse Personnel'], ['D', 'Dispacher']]
+	ROLE_CHOICES = (('CM', 'Clinic Manager'), ('WP', 'Warehouse Personnel'), ('D', 'Dispacher'))
 	role = models.CharField(max_length=2, choices=ROLE_CHOICES, default='CM')
 	clinic_id = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, db_constraint=False, related_name='clinic_id')
 	def __str__(self):

@@ -38,15 +38,23 @@ class HomePage(ListView):
 		}
 		return HttpResponse(template.render(context, request))
 
-class PersonalInfo(ListView):
-	def get(self, request):
 
-		if not request.user.is_authenticated:
-			template = loader.get_template('registration/login.html')
-			context = {
-				'msg': "Your account is not authenticated"
-			}
-			return HttpResponseRedirect(template.render(context, request))
+class ViewHome(ListView):
+	def get(self,request):
+		userid = int(request.GET.get('id',None))
+		role = request.GET.get('role',None)
+
+		if role == 'CM':
+			category_id = Category.objects.get(category_name='IV Fluids').pk
+			return redirect('/asp/clinic_manager/'+str(userid)+'/home/'+str(category_id))
+		elif role == 'D':
+			return redirect('/asp/dispatcher/'+str(userid)+'/home')
+		else:
+			return redirect("/asp/warehouse_personnel/"+str(userid)+"/home")		
+
+
+class PersonalHome(ListView):
+	def get(self, request):
 
 		name = request.user.username
 		user = User.objects.get(username = name)
@@ -54,9 +62,21 @@ class PersonalInfo(ListView):
 
 		context = {}
 
-		template = loader.get_template('asp/personal_info.html')
-		context['user']=user
-		return HttpResponse(template.render(context, request))
+		if user.role == 'CM':
+			category_id = Category.objects.get(category_name='IV Fluids').pk
+			return redirect('/asp/clinic_manager/'+str(userid)+'/home/'+str(category_id))
+		elif user.role == 'D':
+			return redirect('/asp/dispatcher/'+str(userid)+'/home')
+		else:
+			return redirect("/asp/warehouse_personnel/"+str(userid)+"/home")
+
+class PersonalInfo(ListView):
+	"""docstring for CMViewItems"""
+	template_name = 'asp/personal_info.html'
+
+	def get_queryset(self): 
+		self.id = self.kwargs['id']
+		return User.objects.filter(pk=self.id).all()
 
 class ChangeInfo(ListView):
 	def get(self, request):
@@ -65,8 +85,6 @@ class ChangeInfo(ListView):
 		firstname = request.GET.get('firstname',None)
 		lastname = request.GET.get('lastname',None)
 		email = request.GET.get('email',None)
-		clinic_address = request.GET.get('clinic_address',None)
-		clinic_name = request.GET.get('clinic_name',None)
 		password = request.GET.get('password',None)
 
 		target_user = User.objects.get(username=username)
@@ -75,13 +93,20 @@ class ChangeInfo(ListView):
 		target_user.lastname = lastname
 		target_user.email = email
 
-		target_clinic = target_user.clinic_id
-		target_clinic.clinic_address = clinic_address
-		target_clinic.clinic_name = clinic_name
+		if target_user.role == 'CM':
+			target_clinic = target_user.clinic_id
+
+			clinic_address = request.GET.get('clinic_address',None)
+			clinic_name = request.GET.get('clinic_name',None)
+
+			target_clinic.clinic_address = clinic_address
+			target_clinic.clinic_name = clinic_name
+
+			target_clinic.save()
+		
 		target_user.password = password
 
 		target_user.save()
-		target_clinic.save()
 
 		return redirect('/asp/personal_info')
 
