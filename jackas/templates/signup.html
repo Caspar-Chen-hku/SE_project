@@ -1,0 +1,34 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>ASP Register Page</title>
+  {% load static %}
+  <link rel='stylesheet' href="{% static "regstyle.css" %}" type='text/css' >
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <h1 style="width: 600px; margin: auto;">
+    AS-P Register
+  </h1>
+
+  {% block content %}
+	  <form method="post" style="float: left;">
+	    {% csrf_token %}
+	    {% for field in form %}
+	      <p>
+	        {{ field.label_tag }}
+	        {{ field }}
+	        {% if field.help_text %}
+	          <small style="color: grey">{{ field.help_text }}</small>
+	        {% endif %}
+	        {% for error in field.errors %}
+	          <p style="color: red">{{ error }}</p>
+	        {% endfor %}
+	      </p>
+	    {% endfor %}
+	    <button type="submit">Sign up</button>
+	  </form>
+	{% endblock %}
+</body>

@@ -8,27 +8,6 @@ from asp.models import User, Clinic, Token, Order, Item, OrderContainsItem, Prio
 import itertools, csv
 from django.shortcuts import redirect
 
-#def constructOrder(request, id):
-#	new_order = request.POST['neworder']
-#	new_weight = request.POST['weight']
-#	new_priority = request.POST['priority']
-#
-#	print("new_order: ",new_order)
-#	print("new_weight: ",new_weight)
-#	print("new_priority: ",new_priority)
-#
-#	try:
-#		new_instance = Order.objects.create(weight=new_weight,priority=new_priority,status='QFP',placing_time=datetime.now())
-#	except (KeyError, Choice.DoesNotExist):
-#		return render(request, 'http://127.0.0.1:8000/asp/clinic_manager/1/home/1', {
-#			'error_message': "modifying database is unsuccessful"
-#		})
-#	new_instance.save()
-	# Always return an HttpResponseRedirect after successfully dealing
-	# with POST data. This prevents data from being posted twice if a
-	# user hits the Back button.
-#	return HttpResponseRedirect(reverse('http://127.0.0.1:8000/asp/clinic_manager/'+id+'/view_order', args=(id)))
-
 class HomePage(ListView):
 	def get(self,request):
 		template = loader.get_template('asp/homepage.html')

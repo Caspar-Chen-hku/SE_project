@@ -1,0 +1,28 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>ASP Home Page</title>
+  {% load static %}
+  <link rel='stylesheet' href="{% static "stylesheets/mystyle.css" %}" type='text/css' >
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <div style="width: 600px; margin: auto;">
+    {% load static %}
+    <img src="{% static "" %}images/icon.png">
+  </div>
+
+  <div id="register_btn" class="myButton" style="width: 250px; margin-top: 20px; margin-left: 520px; text-align: center; border-style: solid;">
+    <a href="http://127.0.0.1:8000/accounts/register">Register</a>
+  </div>
+
+  <div id="login_btn" class="myButton" style="width: 250px; margin-top: 20px; margin-left: 520px; text-align: center; border-style: solid;">
+    <a href="http://127.0.0.1:8000/accounts/login">Login</a>
+  </div>
+
+{% load static %}
+<script src="{% static "javascripts/myscripts.js" %}" type="text/javascript">
+</script>
+  
