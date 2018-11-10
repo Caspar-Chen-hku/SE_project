@@ -11,7 +11,7 @@ urlpatterns = [
 	path('view_home',
 		views.ViewHome.as_view(),
 		name='view_home'),
-	path('personal_info/<int:id>',
+	path('<int:id>/personal_info',
 		views.PersonalInfo.as_view(),
 		name='personal_info'),
 	path('change_info',
