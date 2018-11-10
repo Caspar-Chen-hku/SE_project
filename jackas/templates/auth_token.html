@@ -2,19 +2,20 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>ASP Register Page - {{role}}</title>
+  <title>ASP Authentication Page</title>
   {% load static %}
   <link rel='stylesheet' href="{% static "regstyle.css" %}" type='text/css' >
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 
 <body>
-  <h1 style="margin: auto;">
-    AS-P Register - {{role}}
+	<center>
+  <h1>
+    AS-P Authentication
   </h1>
 
   {% block content %}
-	  <form method="post" style="float: left;">
+	  <form method="post">
 	    {% csrf_token %}
 	    {% for field in form %}
 	      <p>
@@ -31,4 +32,5 @@
 	    <button type="submit">Sign up</button>
 	  </form>
 	{% endblock %}
+	</center>
 </body>

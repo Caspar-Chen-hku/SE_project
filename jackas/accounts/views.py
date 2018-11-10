@@ -1,12 +1,32 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
-from .forms import SignUpForm
-from asp.models import User, Clinic, Category
+from .forms import SignUpForm, SignUpFormCM, AuthTokenForm
+from asp.models import User, Clinic, Category, Token
 
-def signup(request):
+def authentication(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
+        token = request.POST['token']
+        if Token.objects.filter(token_string=token).exists():
+            Token.objects.filter(token_string=token).delete()
+            if token[0:2] == "01":
+                return redirect('/accounts/clinic_manager/register')
+            elif token[0:2] == "02":
+                return redirect('/accounts/warehouse_personnel/register')
+            elif token[0:2] == "03":
+                return redirect('/accounts/dispatcher/register')
+            else:
+                return redirect('/accounts/auth_token')
+        else:
+            return redirect('/accounts/auth_token')
+    else:
+        form = AuthTokenForm()
+        print(form)
+        return render(request, 'auth_token.html', {'form': form})
+
+def signup_cm(request):
+    if request.method == 'POST':
+        form = SignUpFormCM(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
@@ -18,7 +38,7 @@ def signup(request):
             new_user.firstname = form.cleaned_data.get('first_name')
             new_user.lastname = form.cleaned_data.get('last_name')
             new_user.email = form.cleaned_data.get('email')
-            new_user.role = form.cleaned_data.get('role')
+            new_user.role = 'CM'
             try:
                 clinic = Clinic.objects.get(clinic_name = form.cleaned_data.get('clinic_name'))
                 new_user.clinic_id = clinic
@@ -36,13 +56,66 @@ def signup(request):
             login_user = User.objects.get(username = username)
             userid = login_user.pk
 
-            if login_user.role == 'CM':
-                category_id = Category.objects.get(category_name='IV Fluids').pk
-                return redirect('/asp/clinic_manager/'+str(userid)+'/home/'+str(category_id))
-            elif login_user.role == 'D':
-                return redirect('/asp/dispatcher/'+str(userid)+'/home')
-            else:
-                return redirect("/asp/warehouse_personnel/"+str(userid)+"/home")
+            category_id = Category.objects.get(category_name='IV Fluids').pk
+            return redirect('/asp/clinic_manager/'+str(userid)+'/home/'+str(category_id))
+    else:
+        form = SignUpFormCM()
+    return render(request, 'signup.html', {'form': form, 'role': 'Clinic Manager'})
+
+def signup_wp(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+
+            new_user = User()
+            new_user.username = username
+            new_user.password = raw_password
+            new_user.firstname = form.cleaned_data.get('first_name')
+            new_user.lastname = form.cleaned_data.get('last_name')
+            new_user.email = form.cleaned_data.get('email')
+            new_user.role = 'WP'
+
+            new_user.save()
+            
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+
+            login_user = User.objects.get(username = username)
+            userid = login_user.pk
+
+            return redirect("/asp/warehouse_personnel/"+str(userid)+"/home")
     else:
         form = SignUpForm()
-    return render(request, 'signup.html', {'form': form})
+    return render(request, 'signup.html', {'form': form, 'role': 'Warehouse Personnel'})
+
+def signup_d(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+
+            new_user = User()
+            new_user.username = username
+            new_user.password = raw_password
+            new_user.firstname = form.cleaned_data.get('first_name')
+            new_user.lastname = form.cleaned_data.get('last_name')
+            new_user.email = form.cleaned_data.get('email')
+            new_user.role = 'D'
+            
+            new_user.save()
+            
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+
+            login_user = User.objects.get(username = username)
+            userid = login_user.pk
+
+            return redirect('/asp/dispatcher/'+str(userid)+'/home')
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form, 'role': 'Dispatcher'})
