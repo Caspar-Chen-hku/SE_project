@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from asp.models import User, Clinic, Token, Order, Item, OrderContainsItem, PriorityQueue, DispatchQueue, Category, Distance
 import itertools, csv
 from django.shortcuts import redirect
+from django.contrib.auth.models import User as AuthUser
 
 class HomePage(ListView):
 	def get(self,request):
@@ -86,6 +87,14 @@ class ChangeInfo(ListView):
 		target_user.password = password
 
 		target_user.save()
+
+		# change info for auth_user
+		target_auth_user = AuthUser.objects.get(username=username)
+		target_auth_user.firstname = firstname
+		target_auth_user.lastname = lastname
+		target_auth_user.email = email
+		target_auth_user.set_password(password)
+		target_auth_user.save()
 
 		return redirect('/asp/personal_info')
 
