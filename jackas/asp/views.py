@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User as DjangoUser
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.list import ListView
@@ -7,16 +8,6 @@ from django.http import HttpResponseRedirect
 from asp.models import User, Clinic, Token, Order, Item, OrderContainsItem, PriorityQueue, DispatchQueue, Category, Distance
 import itertools, csv
 from django.shortcuts import redirect
-
-class HomePage(ListView):
-	def get(self,request):
-		template = loader.get_template('asp/homepage.html')
-		num_user = len(User.objects.all())
-		context = {
-			'num_user': num_user
-		}
-		return HttpResponse(template.render(context, request))
-
 
 class ViewHome(ListView):
 	def get(self,request):
@@ -72,6 +63,13 @@ class ChangeInfo(ListView):
 		target_user.lastname = lastname
 		target_user.email = email
 
+		django_user = DjangoUser.objects.get(username=target_user.username)
+
+		django_user.first_name = firstname
+		django_user.last_name = lastname
+		django_user.email = email
+		django_user.set_password(password)
+
 		if target_user.role == 'CM':
 			target_clinic = target_user.clinic_id
 
@@ -86,8 +84,8 @@ class ChangeInfo(ListView):
 		target_user.password = password
 
 		target_user.save()
-
-		return redirect('/asp/personal_info')
+		django_user.save()
+		return redirect('/asp/'+str(target_user.pk)+'/personal_info')
 
 
 class CMConstructOrder(ListView):
