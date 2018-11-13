@@ -8,6 +8,9 @@ from django.http import HttpResponseRedirect
 from asp.models import User, Clinic, Token, Order, Item, OrderContainsItem, PriorityQueue, DispatchQueue, Category, Distance
 import itertools, csv
 from django.shortcuts import redirect
+import io
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
 
 class ViewHome(ListView):
 	def get(self,request):
@@ -401,8 +404,44 @@ class WarehousePersonnelProcessOrder(ListView):
 
 class WarehousePersonnelConfirmOrder(ListView):
 	def get(self, request, *args, **kwargs):
-		pass
+		self.id = kwargs['id']
+		queue_record_list = PriorityQueue.objects.all()
+		order_list = [elem.order_id for elem in queue_record_list]
+		order=order_list[0]
+		order_to_confirm=Order.objects.get(id=order.id)
+		order_to_confirm.status = 'QFD'
+		order_to_confirm.processing_time = datetime.now()
+		order_to_confirm.processor_id = User.objects.get(pk = self.id)
+		order_to_confirm.save()
+		order_to_remove_from_queue = PriorityQueue.objects.get(order_id = order)
+		order_to_remove_from_queue.delete()
+		queue = DispatchQueue();
+		queue.order_id = order;
+		queue.save();
+
+		return redirect('/asp/warehouse/'+str(self.id)+'/home')
 
 class WarehousePersonnelGenerateSL(ListView):
+	#need to install reportlab
 	def get(self, request, *args, **kwargs):
-		pass
+		queue_record_list = PriorityQueue.objects.all()
+		order_list = [elem.order_id for elem in queue_record_list]
+		order=order_list[0]
+		Order_Item=OrderContainsItem.object.all()
+		item_list=[]
+		destination=Clinic.objects.get(pk=order.destination_id).clinic_name
+		for elem in Order_Item:
+			if elem.order_id==order:
+				item_name=Item.objects.get(pk=elem.item_id)
+				item_list.append(item_name)
+		buffer = io.BytesIO()
+	# Create the PDF object, using the buffer as its "file."
+		p = canvas.Canvas(buffer)
+	# Draw things on the PDF. Here's where the PDF generation happens.
+		p.drawString('OrderNumber:',order.pk)
+		p.drawString('Contents:',item_list)
+		p.drawString('destination',destination)
+		p.showPage()
+		p.save()
+		return FileResponse(buffer, as_attachment=True, filename='ShippingLable.pdf')
+		
