@@ -460,7 +460,7 @@ class WarehousePersonnelGenerateSL(ListView):
 		queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
 		order=order_list[0]
-		Order_Item=OrderContainsItem.object.all()
+		Order_Item=OrderContainsItem.objects.all()
 		item_list=[]
 		destination=Clinic.objects.get(pk=order.destination_id).clinic_name
 		for elem in Order_Item:
@@ -471,9 +471,9 @@ class WarehousePersonnelGenerateSL(ListView):
 	# Create the PDF object, using the buffer as its "file."
 		p = canvas.Canvas(buffer)
 	# Draw things on the PDF. Here's where the PDF generation happens.
-		p.drawString('OrderNumber:',order.pk)
-		p.drawString('Contents:',item_list)
-		p.drawString('destination',destination)
+		p.drawString(100,100,'OrderNumber:'+str(order.pk))
+		p.drawString(100,100,'Contents:'+str(item_list))
+		p.drawString(100,100,'destination'+str(destination))
 		p.showPage()
 		p.save()
 		return FileResponse(buffer, as_attachment=True, filename='ShippingLable.pdf')
