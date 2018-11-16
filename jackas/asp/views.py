@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User as DjangoUser
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.list import ListView
@@ -8,6 +9,9 @@ from asp.models import User, Clinic, Token, Order, Item, OrderContainsItem, Prio
 import itertools, csv
 from django.shortcuts import redirect
 from django.contrib.auth.models import User as AuthUser
+import io
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
 
 class HomePage(ListView):
 	def get(self,request):
@@ -17,7 +21,6 @@ class HomePage(ListView):
 			'num_user': num_user
 		}
 		return HttpResponse(template.render(context, request))
-
 
 class ViewHome(ListView):
 	def get(self,request):
@@ -73,6 +76,13 @@ class ChangeInfo(ListView):
 		target_user.lastname = lastname
 		target_user.email = email
 
+		django_user = DjangoUser.objects.get(username=target_user.username)
+
+		django_user.first_name = firstname
+		django_user.last_name = lastname
+		django_user.email = email
+		django_user.set_password(password)
+
 		if target_user.role == 'CM':
 			target_clinic = target_user.clinic_id
 
@@ -87,6 +97,7 @@ class ChangeInfo(ListView):
 		target_user.password = password
 
 		target_user.save()
+<<<<<<< HEAD
 
 		# change info for auth_user
 		target_auth_user = AuthUser.objects.get(username=username)
@@ -97,6 +108,10 @@ class ChangeInfo(ListView):
 		target_auth_user.save()
 
 		return redirect('/asp/personal_info')
+=======
+		django_user.save()
+		return redirect('/asp/'+str(target_user.pk)+'/personal_info')
+>>>>>>> 05edc3e360424f9f2d5c3a16cf1ecdeba471684d
 
 
 class CMConstructOrder(ListView):
@@ -403,17 +418,86 @@ class DispatcherConfirmDispatch(ListView):
 		return redirect('/asp/dispatcher/'+str(self.id)+'/home')
 
 class WarehousePersonnelHome(ListView):
-	def get(self, request, *args, **kwargs):
-		pass
+	template_name = 'asp/priority_queue_list.html'
+	def get_queryset(self):
+		self.id = self.kwargs['id']
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['user'] = User.objects.get(pk=self.id)
+		priority_queue_record_list = PriorityQueue.objects.all()
+		order_list = [elem.order_id for elem in priority_queue_record_list]
+		for order in order_list:
+			order.priority = order.get_priority_display()
+		context['order_list'] = order_list
+		return context
 
 class WarehousePersonnelProcessOrder(ListView):
-	def get(self, request, *args, **kwargs):
-		pass
+	template_name = 'asp/wp_process_order.html'
+	def get_queryset(self):
+	   self.id = self.kwargs['id']
+
+     ## viewing the details of the order removed for packing with name,quantity,destination
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['user'] = User.objects.get(pk = self.id)
+		process_record = PriorityQueue.objects.all()[:1]
+		process_list = [elem.order_id for elem in process_record]
+		contain_record = OrderContainsItem.objects.filter(pk=process_list[0].id).all()
+		context['order'] = process_list
+		context['name'] = contain_record[0]
+
+		## update the database to processing state ##
+		order_to_update = Order.objects.get(id=process_list[0].id)
+		order_to_update.status = 'PBW'
+		order_to_update.processing_time = datetime.now()
+		order_to_update.processor_id = User.objects.get(pk=self.id)
+		order_to_update.save()
+		order_to_remove_from_queue = PriorityQueue.objects.get(order_id=process_list[0])
+		order_to_remove_from_queue.delete()
+		return context
+
+
 
 class WarehousePersonnelConfirmOrder(ListView):
 	def get(self, request, *args, **kwargs):
-		pass
+		self.id = kwargs['id']
+		queue_record_list = PriorityQueue.objects.all()
+		order_list = [elem.order_id for elem in queue_record_list]
+		order=order_list[0]
+		order_to_confirm=Order.objects.get(id=order.id)
+		order_to_confirm.status = 'QFD'
+		order_to_confirm.processing_time = datetime.now()
+		order_to_confirm.processor_id = User.objects.get(pk = self.id)
+		order_to_confirm.save()
+		order_to_remove_from_queue = PriorityQueue.objects.get(order_id = order)
+		order_to_remove_from_queue.delete()
+		queue = DispatchQueue();
+		queue.order_id = order;
+		queue.save();
+
+		return redirect('/asp/warehouse/'+str(self.id)+'/home')
 
 class WarehousePersonnelGenerateSL(ListView):
+	#need to install reportlab
 	def get(self, request, *args, **kwargs):
-		pass
+		queue_record_list = PriorityQueue.objects.all()
+		order_list = [elem.order_id for elem in queue_record_list]
+		order=order_list[0]
+		Order_Item=OrderContainsItem.objects.all()
+		item_list=[]
+		destination=Clinic.objects.get(pk=order.destination_id).clinic_name
+		for elem in Order_Item:
+			if elem.order_id==order:
+				item_name=Item.objects.get(pk=elem.item_id)
+				item_list.append(item_name)
+		buffer = io.BytesIO()
+	# Create the PDF object, using the buffer as its "file."
+		p = canvas.Canvas(buffer)
+	# Draw things on the PDF. Here's where the PDF generation happens.
+		p.drawString(100,100,'OrderNumber:'+str(order.pk))
+		p.drawString(100,100,'Contents:'+str(item_list))
+		p.drawString(100,100,'destination'+str(destination))
+		p.showPage()
+		p.save()
+		return FileResponse(buffer, as_attachment=True, filename='ShippingLable.pdf')
+		

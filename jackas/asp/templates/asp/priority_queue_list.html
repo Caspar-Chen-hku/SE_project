@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>WarehousePersonnel Home Page</title>
+{% load static %}
+<link rel='stylesheet' href="{% static "stylesheets/mystyle.css" %}" type='text/css' >
+<style>
+#orders {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#orders td, #orders th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#orders tr:nth-child(even){background-color: #f2f2f2;}
+
+#orders tr:hover {background-color: #ddd;}
+
+#orders th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+#process-button {
+  display: inline-block;
+  padding: 6px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px #999;
+}
+#process-button:hover {background-color: #3e8e41}
+#process-button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 3px #666;
+  transform: translateY(4px);
+}
+</style>
+</head>
+<body>
+  <div id='header' style="margin-bottom: 20px">
+    <span id='warehousepPersonnel_info'>Hello, {{user.username}} </span>
+    <span id='website_title'>Orders in Process Queue</span>
+  </div>
+
+  <div id='personal' style='width: 20%'>
+    <div style="margin-left: 40px;"><h3>Personal Info</h3></div>
+    <div id='profile'>
+        <div class='myButton' id='profile_btn'>
+            {{user.username}}
+        </div>
+        <div class='myButton'>Role: WarehousePersonnel</div>
+    </div>
+    <hr style="border: 1px solid black;" />
+
+    <ul id='personal_list' style='list-style-type: none'>
+        <li class='myButton'>
+            <a href="/asp/{{user.pk}}/personal_info" target="_blank">Personal Information</a>
+        </li>
+        <li class='myButton'>
+          <a href="" style="background-color: #adadad">Home</a>
+        </li>
+    </ul>
+  </div>
+
+  <div style="width: 75%; float: right;">
+    <button onclick="location.href='process_order'" id="process-button">Process to dispatch</button>
+
+    <table id="orders">
+      <tr>
+        <th>Order ID</th>
+        <th>Priority</th>
+        <th>Status</th>
+
+      </tr>
+      {% for order in order_list %}
+      <tr>
+        <td>{{order.id}}</td>
+        <td>{{order.priority}}</td>
+        <td>{{order.status}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</body>

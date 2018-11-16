@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Processing Order by WarehousePersonnel</title>
+{% load static %}
+<link rel='stylesheet' href="{% static "stylesheets/mystyle.css" %}" type='text/css' >
+<style>
+#orders {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#orders td, #orders th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#orders tr:nth-child(even){background-color: #f2f2f2;}
+
+#orders tr:hover {background-color: #ddd;}
+
+#orders th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+#pdf-button {
+  display: inline-block;
+  padding: 6px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px #999;
+}
+#pdf-button:hover {background-color: #3e8e41}
+#pdf-button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 3px #666;
+  transform: translateY(4px);
+}
+#confirm-button {
+  display: inline-block;
+
+  padding: 6px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #f4a142;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px #999;
+}
+#confirm-button:hover {background-color: #846036}
+#confirm-button:active {
+  background-color: #846036;
+  box-shadow: 0 3px #666;
+  transform: translateY(4px);
+}
+#cancel-button {
+  display: inline-block;
+
+  padding: 6px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #f44242;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px #999;
+}
+#cancel-button:hover {background-color: #7c2424}
+#cancel-button:active {
+  background-color: #7c2424;
+  box-shadow: 0 3px #666;
+  transform: translateY(4px);
+}
+</style>
+</head>
+
+<body>
+<h1>Order Details</h1>
+<table id="orders">
+  <tr>
+
+    <th>Name</th>
+    <th>Quantity</th>
+    <th>Destination</th>
+  </tr>
+   {% load static %}
+
+  <tr>
+    <td>{{name.item_id}}</td>
+    <td>{{name.item_quantity}}</td>
+    <td>{{order.destination_id.clinic_address}}</td>
+
+  </tr>
+
+</table>
+<center>
+  <button onclick="location.href='home'" id="cancel-button">Cancel</button>
+  <button onclick="location.href='confirm_process'" id="confirm_process">Confirm</button>
+  <button onclick="location.href='/asp/warehouse_personnel/generate_shipping_label'" id="pdf-button">Generate PDF</button>
+</center>
+{% load static %}
+<script src="{% static "javascripts/myscripts.js" %}" type="text/javascript">
+</script>
+
+</body>
+</html>

@@ -2,9 +2,6 @@ from django.urls import path
 from asp import views
 
 urlpatterns = [
-	path('home',
-		views.HomePage.as_view(),
-		name='project-home'),
 	path('personal_home',
 		views.PersonalHome.as_view(),
 		name='personal_home'),
