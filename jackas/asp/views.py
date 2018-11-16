@@ -476,5 +476,6 @@ class WarehousePersonnelGenerateSL(ListView):
 		#p.drawString(100,300,'destination '+str(destination))
 		p.showPage()
 		p.save()
+
 		return FileResponse(buffer, as_attachment=True, filename='ShippingLable.pdf')
 		

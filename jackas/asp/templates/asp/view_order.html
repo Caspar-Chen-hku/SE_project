@@ -69,6 +69,7 @@
             <th>Weight</th>
             <th>Order Details</th>
             <th>Status</th>
+            <th>Time</th>
             <th>Operation</th>
           </tr>
           {% for order in processing_orders %}
@@ -78,6 +79,28 @@
             <td>{{order.weight}}</td>
             <td>Under Construction</td>
             <td>{{order.status}}</td>
+            <td>
+                Placing time: 
+                {% if order.placing_time %}
+                {{order.placing_time}}
+                {% endif %} <br>
+ 
+                {% if order.processing_time %}
+                Processing time:
+                {{order.processing_time}}
+                {% endif %} <br>
+
+                {% if order.dispatching_time %}
+                Dispatching time: 
+                {{order.dispatching_time}}
+                {% endif %} <br>
+
+                {% if order.dilivered_time %}
+                Delivered time: 
+                {{order.dilivered_time}}
+                {% endif %} <br>
+
+            </td>
             <td>
                 {% if order.status == 'DI' %}
                 <button onclick="location.href='/asp/clinic_manager/{{user.id}}/confirm_order/{{order.id}}'">Delivered</button>
