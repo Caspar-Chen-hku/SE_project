@@ -4,3 +4,4 @@ jackas/db.sqlite3
 jackas/asp/migrations
 jackas/asp/migrations
 jackas/asp/__pycache__
+jackas/sent_emails

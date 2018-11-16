@@ -3,6 +3,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from .forms import SignUpForm, SignUpFormCM, AuthTokenForm
 from asp.models import User, Clinic, Category, Token
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.core.mail import send_mail
+import random
 
 def authentication(request):
     if request.method == 'POST':
@@ -119,3 +122,25 @@ def signup_d(request):
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form, 'role': 'Dispatcher'})
+
+@csrf_exempt
+def adminSendToken(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        role = request.POST['role']
+        if role == 'cm':
+            token = "01" + str(random.randint(1000,9999))
+        elif role == 'wp':
+            token = "02" + str(random.randint(1000,9999))
+        else:
+            token = "03" + str(random.randint(1000,9999))
+        token_to_add = Token(token_string = token)
+        token_to_add.save()
+        subject = 'AS-P Token'
+        body = "Token is: " + token + "\nRole: " + role + "\nPlease use the token to register.\n"
+        from_asp = 'admin@asp.com'
+
+        send_mail(subject, body, from_asp, [email], fail_silently=False)
+        return redirect('/accounts/admin')
+    else:
+        return render(request, 'send_token.html', {})

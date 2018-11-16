@@ -36,7 +36,6 @@ class ViewHome(ListView):
 		else:
 			return redirect("/asp/warehouse_personnel/"+str(userid)+"/home")		
 
-
 class PersonalHome(ListView):
 	def get(self, request):
 

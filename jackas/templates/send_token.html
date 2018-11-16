@@ -1,0 +1,30 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>ASP Admin Page</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+	<center>
+	  <h1>
+	    AS-P Admin Page
+	  </h1>
+	  {% block content %}
+	  <form method="post">
+	  	  {% csrf_token %}
+	  	  Email:<br>
+		  <input type="text" name="email" value="">
+		  <br>
+		  Role:<br>
+		  <select name="role" value="">
+			  <option value="cm">Clinic Manager</option>
+			  <option value="wp">Warehouse Personnel</option>
+			  <option value="di">Dispatcher</option>
+		  </select>
+	    <button type="submit">Send token</button>
+	  </form>
+	  {% endblock %}
+	</center>
+</body>
