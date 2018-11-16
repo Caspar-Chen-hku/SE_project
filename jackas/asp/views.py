@@ -8,9 +8,19 @@ from django.http import HttpResponseRedirect
 from asp.models import User, Clinic, Token, Order, Item, OrderContainsItem, PriorityQueue, DispatchQueue, Category, Distance
 import itertools, csv
 from django.shortcuts import redirect
+from django.contrib.auth.models import User as AuthUser
 import io
 from django.http import FileResponse
 from reportlab.pdfgen import canvas
+
+class HomePage(ListView):
+	def get(self,request):
+		template = loader.get_template('asp/homepage.html')
+		num_user = len(User.objects.all())
+		context = {
+			'num_user': num_user
+		}
+		return HttpResponse(template.render(context, request))
 
 class ViewHome(ListView):
 	def get(self,request):
@@ -87,6 +97,15 @@ class ChangeInfo(ListView):
 		target_user.password = password
 
 		target_user.save()
+
+		# change info for auth_user
+		target_auth_user = AuthUser.objects.get(username=username)
+		target_auth_user.firstname = firstname
+		target_auth_user.lastname = lastname
+		target_auth_user.email = email
+		target_auth_user.set_password(password)
+		target_auth_user.save()
+
 		django_user.save()
 		return redirect('/asp/'+str(target_user.pk)+'/personal_info')
 
