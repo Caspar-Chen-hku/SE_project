@@ -52,7 +52,7 @@ urlpatterns = [
 	path('warehouse_personnel/<int:id>/confirm_process',
 		views.WarehousePersonnelConfirmOrder.as_view(),
 		name='wp-confirm-process'),
-	path('warehouse_personnel/<int:id>/generate_shipping_label',
+	path('warehouse_personnel/generate_shipping_label',
 		views.WarehousePersonnelGenerateSL.as_view(),
 		name='wp-generate-sl'),
 ]

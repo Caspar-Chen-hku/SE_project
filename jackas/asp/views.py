@@ -93,49 +93,49 @@ class ChangeInfo(ListView):
 
 class CMConstructOrder(ListView):
 	def get(self, request):
-		num_order = int(request.GET.get('num',None));
+		num_order = int(request.GET.get('num',None))
 		
-		new_weight = float(request.GET.get('weight',None));
-		new_priority = request.GET.get('priority',None);
-		user_id = int(request.GET.get('user',None));
+		new_weight = float(request.GET.get('weight',None))
+		new_priority = request.GET.get('priority',None)
+		user_id = int(request.GET.get('user',None))
 
-		new_order = Order();
-		new_order.weight=new_weight;
-		new_order.priority=new_priority;
-		new_order.status='QFP';
-		new_order.placing_time=datetime.now();
+		new_order = Order()
+		new_order.weight=new_weight
+		new_order.priority=new_priority
+		new_order.status='QFP'
+		new_order.placing_time=datetime.now()
 
 		user = User.objects.get(pk = user_id)
 
-		new_order.destination_id = user.clinic_id;
-		new_order.owner_id = user;
+		new_order.destination_id = user.clinic_id
+		new_order.owner_id = user
 
-		new_order.save();
+		new_order.save()
 
-		queue = PriorityQueue();
-		queue.order_id = new_order;
-		queue.save();
+		queue = PriorityQueue()
+		queue.order_id = new_order
+		queue.save()
 
 		item_list = []
 		quantity_list = []
 		photo_list = []
 
 		for i in range(num_order):
-			new_relation = OrderContainsItem();
-			itemid = int(request.GET.get('item'+str(i),None));
-			itemnum = int(request.GET.get('item'+str(i)+'num',None));
+			new_relation = OrderContainsItem()
+			itemid = int(request.GET.get('item'+str(i),None))
+			itemnum = int(request.GET.get('item'+str(i)+'num',None))
 
-			item = Item.objects.get(pk=itemid);
+			item = Item.objects.get(pk=itemid)
 
-			new_relation.order_id = new_order;
-			new_relation.item_id = item;
-			new_relation.item_quantity = itemnum;
+			new_relation.order_id = new_order
+			new_relation.item_id = item
+			new_relation.item_quantity = itemnum
 
-			item_list.append(item.item_name);
-			quantity_list.append(itemnum);
-			photo_list.append(item.photo_url);
+			item_list.append(item.item_name)
+			quantity_list.append(itemnum)
+			photo_list.append(item.photo_url)
 
-			new_relation.save();
+			new_relation.save()
 
 		template = loader.get_template('asp/view_order_info.html')
 		context = {
@@ -420,7 +420,7 @@ class WarehousePersonnelProcessOrder(ListView):
 		process_record = PriorityQueue.objects.all()[:1]
 		process_list = [elem.order_id for elem in process_record]
 		contain_record = OrderContainsItem.objects.filter(pk=process_list[0].id).all()
-		context['order'] = process_list
+		context['order'] = process_list[0]
 		context['name'] = contain_record[0]
 
 		## update the database to processing state ##
@@ -460,20 +460,20 @@ class WarehousePersonnelGenerateSL(ListView):
 		queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
 		order=order_list[0]
-		Order_Item=OrderContainsItem.object.all()
+		Order_Item=OrderContainsItem.objects.all()
 		item_list=[]
-		destination=Clinic.objects.get(pk=order.destination_id).clinic_name
+		destination=Clinic.objects.get(pk=order.destination_id.pk).clinic_name
 		for elem in Order_Item:
 			if elem.order_id==order:
-				item_name=Item.objects.get(pk=elem.item_id)
+				item_name=Item.objects.get(pk=elem.item_id.pk)
 				item_list.append(item_name)
 		buffer = io.BytesIO()
 	# Create the PDF object, using the buffer as its "file."
 		p = canvas.Canvas(buffer)
 	# Draw things on the PDF. Here's where the PDF generation happens.
-		p.drawString('OrderNumber:',order.pk)
-		p.drawString('Contents:',item_list)
-		p.drawString('destination',destination)
+		p.drawString(100,100,'OrderNumber: '+str(order.pk))
+		#p.drawString(100,200,'Contents: '+str(item_list))
+		#p.drawString(100,300,'destination '+str(destination))
 		p.showPage()
 		p.save()
 		return FileResponse(buffer, as_attachment=True, filename='ShippingLable.pdf')
