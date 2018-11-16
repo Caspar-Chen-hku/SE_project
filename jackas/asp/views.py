@@ -12,6 +12,7 @@ from django.contrib.auth.models import User as AuthUser
 import io
 from django.http import FileResponse
 from reportlab.pdfgen import canvas
+from reportlab.graphics import renderPDF
 
 class HomePage(ListView):
 	def get(self,request):
@@ -432,7 +433,7 @@ class WarehousePersonnelProcessOrder(ListView):
 	def get_queryset(self):
 	   self.id = self.kwargs['id']
 
-     ## viewing the details of the order removed for packing with name,quantity,destination
+	 ## viewing the details of the order removed for packing with name,quantity,destination
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context['user'] = User.objects.get(pk = self.id)
@@ -474,27 +475,29 @@ class WarehousePersonnelConfirmOrder(ListView):
 		return redirect('/asp/warehouse/'+str(self.id)+'/home')
 
 class WarehousePersonnelGenerateSL(ListView):
-	#need to install reportlab
+	# need to install reportlab
 	def get(self, request, *args, **kwargs):
 		queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
-		order=order_list[0]
-		Order_Item=OrderContainsItem.objects.all()
-		item_list=[]
-		destination=Clinic.objects.get(pk=order.destination_id.pk).clinic_name
+		order = order_list[0]
+		Order_Item = OrderContainsItem.objects.all()
+		item_list = []
+		destination = Clinic.objects.get(pk=order.destination_id.pk).clinic_name
 		for elem in Order_Item:
-			if elem.order_id==order:
-				item_name=Item.objects.get(pk=elem.item_id.pk)
+			if elem.order_id == order:
+				item_name = Item.objects.get(pk=elem.item_id.pk)
 				item_list.append(item_name)
-		buffer = io.BytesIO()
-	# Create the PDF object, using the buffer as its "file."
-		p = canvas.Canvas(buffer)
-	# Draw things on the PDF. Here's where the PDF generation happens.
+
+		response = HttpResponse(content_type='application/pdf')
+		response['Content-Disposition'] = 'attachment; filename="shipping_label.pdf"'
+
+		p = canvas.Canvas(response)
+
 		p.drawString(100,100,'OrderNumber: '+str(order.pk))
-		#p.drawString(100,200,'Contents: '+str(item_list))
-		#p.drawString(100,300,'destination '+str(destination))
+		p.drawString(100,200,'Contents: '+str(item_list))
+		p.drawString(100,300,'destination '+str(destination))
+
 		p.showPage()
 		p.save()
 
-		return FileResponse(buffer, as_attachment=True, filename='ShippingLable.pdf')
-		
+		return response
