@@ -97,7 +97,6 @@ class ChangeInfo(ListView):
 		target_user.password = password
 
 		target_user.save()
-<<<<<<< HEAD
 
 		# change info for auth_user
 		target_auth_user = AuthUser.objects.get(username=username)
@@ -107,11 +106,8 @@ class ChangeInfo(ListView):
 		target_auth_user.set_password(password)
 		target_auth_user.save()
 
-		return redirect('/asp/personal_info')
-=======
 		django_user.save()
 		return redirect('/asp/'+str(target_user.pk)+'/personal_info')
->>>>>>> 05edc3e360424f9f2d5c3a16cf1ecdeba471684d
 
 
 class CMConstructOrder(ListView):
