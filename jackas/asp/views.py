@@ -474,28 +474,27 @@ class WarehousePersonnelConfirmOrder(ListView):
 		return redirect('/asp/warehouse/'+str(self.id)+'/home')
 
 class WarehousePersonnelGenerateSL(ListView):
+	
 	# need to install reportlab
 	def get(self, request, *args, **kwargs):
+		response = HttpResponse(content_type='application/pdf')
+		response['Content-Disposition'] = 'attachment; filename="shipping_label.pdf"'
 		queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
 		order = order_list[0]
 		Order_Item = OrderContainsItem.objects.all()
 		item_list = []
 		destination = Clinic.objects.get(pk=order.destination_id.pk).clinic_name
+		p = canvas.Canvas(response)
+		p.drawString(100, 100, 'OrderNumber: ' + str(order.pk))
+		length=200
 		for elem in Order_Item:
 			if elem.order_id == order:
-				item_name = Item.objects.get(pk=elem.item_id.pk)
-				item_list.append(item_name)
-
-		response = HttpResponse(content_type='application/pdf')
-		response['Content-Disposition'] = 'attachment; filename="shipping_label.pdf"'
-
-		p = canvas.Canvas(response)
-
-		p.drawString(100,100,'OrderNumber: '+str(order.pk))
-		p.drawString(100,200,'Contents: '+str(item_list))
-		p.drawString(100,300,'destination '+str(destination))
-
+				item_name = Item.objects.get(pk=elem.item_id.pk).item_name
+				#item_list.append((item_name,elem.item_quantity))
+				p.drawString(100, length, 'Item_Name: ' + str(item_name)+'   Item_Quantity'+str(elem.item_quantity))
+				length=length+50
+		p.drawString(100, length, 'destination: ' + str(destination))
 		p.showPage()
 		p.save()
 
