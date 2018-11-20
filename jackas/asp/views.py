@@ -227,6 +227,8 @@ class CMCancelOrder(ListView):
 		order_to_update.status = 'CA'
 		order_to_update.canceled_time = datetime.now()
 		order_to_update.save()
+		order_to_remove_from_queue = PriorityQueue.objects.get(order_id = order_to_update)
+		order_to_remove_from_queue.delete()
 		return Order.objects.filter(owner_id__pk=self.id).all()
 
 	def get_context_data(self, **kwargs): 
@@ -447,7 +449,7 @@ class WarehousePersonnelProcessOrder(ListView):
 	def get_queryset(self):
 	   self.id = self.kwargs['id']
 
-	 ## viewing the details of the order removed for packing with name,quantity,destination
+	# viewing the details of the order removed for packing with name,quantity,destination
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context['user'] = User.objects.get(pk = self.id)
@@ -457,17 +459,13 @@ class WarehousePersonnelProcessOrder(ListView):
 		context['order'] = process_list[0]
 		context['name'] = contain_record[0]
 
-		## update the database to processing state ##
+		# update the database to processing state ##
 		order_to_update = Order.objects.get(id=process_list[0].id)
 		order_to_update.status = 'PBW'
 		order_to_update.processing_time = datetime.now()
 		order_to_update.processor_id = User.objects.get(pk=self.id)
 		order_to_update.save()
-		##order_to_remove_from_queue = PriorityQueue.objects.get(order_id=process_list[0])
-		##order_to_remove_from_queue.delete()
 		return context
-
-
 
 class WarehousePersonnelConfirmOrder(ListView):
 	def get(self, request, *args, **kwargs):
@@ -489,28 +487,25 @@ class WarehousePersonnelConfirmOrder(ListView):
 		return redirect('/asp/warehouse/'+str(self.id)+'/home')
 
 class WarehousePersonnelGenerateSL(ListView):
+	
 	# need to install reportlab
 	def get(self, request, *args, **kwargs):
+		response = HttpResponse(content_type='application/pdf')
+		response['Content-Disposition'] = 'attachment; filename="shipping_label.pdf"'
 		queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
 		order = order_list[0]
 		Order_Item = OrderContainsItem.objects.all()
-		item_list = []
 		destination = Clinic.objects.get(pk=order.destination_id.pk).clinic_name
+		p = canvas.Canvas(response)
+		p.drawString(100, 100, 'OrderNumber: ' + str(order.pk))
+		length=200
 		for elem in Order_Item:
 			if elem.order_id == order:
-				item_name = Item.objects.get(pk=elem.item_id.pk)
-				item_list.append(item_name)
-
-		response = HttpResponse(content_type='application/pdf')
-		response['Content-Disposition'] = 'attachment; filename="shipping_label.pdf"'
-
-		p = canvas.Canvas(response)
-
-		p.drawString(80,400,'OrderNumber: '+str(order.pk))
-		p.drawString(80,20,'Contents: '+str(item_list))
-		p.drawString(80,50,'destination '+str(destination))
-
+				item_name = Item.objects.get(pk=elem.item_id.pk).item_name
+				p.drawString(100, length, 'Item_Name: ' + str(item_name)+'   Item_Quantity'+str(elem.item_quantity))
+				length=length+50
+		p.drawString(100, length, 'destination: ' + str(destination))
 		p.showPage()
 		p.save()
 
