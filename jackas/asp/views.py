@@ -474,12 +474,12 @@ class WarehousePersonnelProcessOrder(ListView):
 		order_to_display.extend(low_orders)
 
 		order_to_process = order_to_display[0]
-		item_list = OrderContainsItem.objects.filter(order_id=order_to_process.id).all()
+		item_list = OrderContainsItem.objects.filter(order_id=order_to_process).all()
 		context['order'] = order_to_process
 		context['item_list'] = item_list
 
 		# update the database to processing state
-		order_to_update = Order.objects.get(id=order_to_process.id)
+		order_to_update = Order.objects.get(pk=order_to_process.pk)
 		order_to_update.status = 'PBW'
 		order_to_update.processing_time = datetime.now()
 		order_to_update.processor_id = User.objects.get(pk=self.id)
@@ -491,8 +491,27 @@ class WarehousePersonnelConfirmOrder(ListView):
 		self.id = kwargs['id']
 		queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
-		order=order_list[0]
-		order_to_confirm=Order.objects.get(id=order.id)
+		
+		high_orders = []
+		medium_orders = []
+		low_orders = []
+		for order in order_list:
+			order.priority = order.get_priority_display()
+			if order.priority == "High":
+				high_orders.append(order)
+			elif order.priority == "Medium":
+				medium_orders.append(order)
+			else:
+				low_orders.append(order)
+			order.status = order.get_status_display()
+		order_to_display = []
+		order_to_display.extend(high_orders)
+		order_to_display.extend(medium_orders)
+		order_to_display.extend(low_orders)
+
+		order = order_to_display[0]
+
+		order_to_confirm=Order.objects.get(pk=order.pk)
 		order_to_confirm.status = 'QFD'
 		order_to_confirm.processing_time = datetime.now()
 		order_to_confirm.processor_id = User.objects.get(pk = self.id)
@@ -513,13 +532,34 @@ class WarehousePersonnelGenerateSL(ListView):
 		response['Content-Disposition'] = 'attachment; filename="shipping_label.pdf"'
 		queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
-		order = order_list[0]
+		
+		high_orders = []
+		medium_orders = []
+		low_orders = []
+		for order in order_list:
+			order.priority = order.get_priority_display()
+			if order.priority == "High":
+				high_orders.append(order)
+			elif order.priority == "Medium":
+				medium_orders.append(order)
+			else:
+				low_orders.append(order)
+			order.status = order.get_status_display()
+		order_to_display = []
+		order_to_display.extend(high_orders)
+		order_to_display.extend(medium_orders)
+		order_to_display.extend(low_orders)
+
+		order = order_to_display[0]
+		
 		Order_Item = OrderContainsItem.objects.all()
 
 		destination = Clinic.objects.get(pk=order.destination_id.pk)
 		p = canvas.Canvas(response)
 		p.setTitle("Shipping Label - ASP")
 		p.drawString(100, 800, 'OrderNumber: ' + str(order.pk))
+
+		p.drawString(300, 800, 'Priority: ' + order.priority)
 		p.drawString(100, 750, 'Order info:')
 		length=730
 		for elem in Order_Item:
