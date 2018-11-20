@@ -471,7 +471,7 @@ class WarehousePersonnelConfirmOrder(ListView):
 		queue.order_id = order;
 		queue.save();
 
-		return redirect('/asp/warehouse/'+str(self.id)+'/home')
+		return redirect('/asp/warehouse_personnel/'+str(self.id)+'/home')
 
 class WarehousePersonnelGenerateSL(ListView):
 	
@@ -484,17 +484,19 @@ class WarehousePersonnelGenerateSL(ListView):
 		order = order_list[0]
 		Order_Item = OrderContainsItem.objects.all()
 		item_list = []
-		destination = Clinic.objects.get(pk=order.destination_id.pk).clinic_name
+		destination = Clinic.objects.get(pk=order.destination_id.pk)
 		p = canvas.Canvas(response)
-		p.drawString(100, 100, 'OrderNumber: ' + str(order.pk))
-		length=200
+		p.drawString(100, 800, 'OrderNumber: ' + str(order.pk))
+		p.drawString(100, 750, 'Order info:')
+		length=730
 		for elem in Order_Item:
 			if elem.order_id == order:
 				item_name = Item.objects.get(pk=elem.item_id.pk).item_name
 				#item_list.append((item_name,elem.item_quantity))
-				p.drawString(100, length, 'Item_Name: ' + str(item_name)+'   Item_Quantity'+str(elem.item_quantity))
-				length=length+50
-		p.drawString(100, length, 'destination: ' + str(destination))
+				p.drawString(100, length, 'Item Name: ' + str(item_name)+'    Quantity: '+str(elem.item_quantity))
+				length=length-20
+		p.drawString(100, length-20, 'Destination: ' + str(destination.clinic_name))
+		p.drawString(100, length-40, 'Address: '+str(destination.clinic_address))
 		p.showPage()
 		p.save()
 
