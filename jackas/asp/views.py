@@ -453,14 +453,33 @@ class WarehousePersonnelProcessOrder(ListView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context['user'] = User.objects.get(pk = self.id)
-		process_record = PriorityQueue.objects.all()[:1]
-		process_list = [elem.order_id for elem in process_record]
-		contain_record = OrderContainsItem.objects.filter(pk=process_list[0].id).all()
-		context['order'] = process_list[0]
-		context['name'] = contain_record[0]
 
-		# update the database to processing state ##
-		order_to_update = Order.objects.get(id=process_list[0].id)
+		priority_queue_record_list = PriorityQueue.objects.all()
+		order_list = [elem.order_id for elem in priority_queue_record_list]
+		high_orders = []
+		medium_orders = []
+		low_orders = []
+		for order in order_list:
+			order.priority = order.get_priority_display()
+			if order.priority == "High":
+				high_orders.append(order)
+			elif order.priority == "Medium":
+				medium_orders.append(order)
+			else:
+				low_orders.append(order)
+			order.status = order.get_status_display()
+		order_to_display = []
+		order_to_display.extend(high_orders)
+		order_to_display.extend(medium_orders)
+		order_to_display.extend(low_orders)
+
+		order_to_process = order_to_display[0]
+		item_list = OrderContainsItem.objects.filter(order_id=order_to_process.id).all()
+		context['order'] = order_to_process
+		context['item_list'] = item_list
+
+		# update the database to processing state
+		order_to_update = Order.objects.get(id=order_to_process.id)
 		order_to_update.status = 'PBW'
 		order_to_update.processing_time = datetime.now()
 		order_to_update.processor_id = User.objects.get(pk=self.id)
@@ -484,7 +503,7 @@ class WarehousePersonnelConfirmOrder(ListView):
 		queue.order_id = order;
 		queue.save();
 
-		return redirect('/asp/warehouse/'+str(self.id)+'/home')
+		return redirect('/asp/warehouse_personnel/'+str(self.id)+'/home')
 
 class WarehousePersonnelGenerateSL(ListView):
 	
@@ -496,16 +515,20 @@ class WarehousePersonnelGenerateSL(ListView):
 		order_list = [elem.order_id for elem in queue_record_list]
 		order = order_list[0]
 		Order_Item = OrderContainsItem.objects.all()
-		destination = Clinic.objects.get(pk=order.destination_id.pk).clinic_name
+
+		destination = Clinic.objects.get(pk=order.destination_id.pk)
 		p = canvas.Canvas(response)
-		p.drawString(100, 100, 'OrderNumber: ' + str(order.pk))
-		length=200
+		p.setTitle("Shipping Label - ASP")
+		p.drawString(100, 800, 'OrderNumber: ' + str(order.pk))
+		p.drawString(100, 750, 'Order info:')
+		length=730
 		for elem in Order_Item:
 			if elem.order_id == order:
 				item_name = Item.objects.get(pk=elem.item_id.pk).item_name
-				p.drawString(100, length, 'Item_Name: ' + str(item_name)+'   Item_Quantity'+str(elem.item_quantity))
-				length=length+50
-		p.drawString(100, length, 'destination: ' + str(destination))
+				p.drawString(100, length, 'Item Name: ' + str(item_name)+'    Quantity: '+str(elem.item_quantity))
+				length=length-20
+		p.drawString(100, length-20, 'Destination: ' + str(destination.clinic_name))
+		p.drawString(100, length-40, 'Address: '+str(destination.clinic_address))
 		p.showPage()
 		p.save()
 

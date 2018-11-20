@@ -78,8 +78,8 @@
   </div>
 
   <div style="width: 75%; float: right;">
+    {% if order_list|length != 0 %}
     <button onclick="location.href='process_order'" id="process-button">Process to dispatch</button>
-
     <table id="orders">
       <tr>
         <th style="text-align: center;">Order ID</th>
@@ -95,5 +95,11 @@
       </tr>
       {% endfor %}
     </table>
+    {% endif %}
+
+    {% if order_list|length == 0 %}
+    <h3>No more order to process</h3>
+    {% endif %}
+
   </div>
 </body>

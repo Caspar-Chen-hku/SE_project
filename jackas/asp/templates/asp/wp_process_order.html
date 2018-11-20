@@ -98,19 +98,18 @@
 <h1>Order Details</h1>
 <table id="orders">
   <tr>
-
-    <th>Name</th>
+    <th>Item Name</th>
     <th>Quantity</th>
     <th>Destination</th>
   </tr>
-   {% load static %}
 
+  {% for item in item_list %}
   <tr>
-    <td>{{name.item_id}}</td>
-    <td>{{name.item_quantity}}</td>
+    <td>{{item.item_id}}</td>
+    <td>{{item.item_quantity}}</td>
     <td>{{order.destination_id.clinic_address}}</td>
-
   </tr>
+  {% endfor %}
 
 </table>
 <br>
