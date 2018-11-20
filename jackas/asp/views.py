@@ -448,8 +448,8 @@ class WarehousePersonnelProcessOrder(ListView):
 		order_to_update.processing_time = datetime.now()
 		order_to_update.processor_id = User.objects.get(pk=self.id)
 		order_to_update.save()
-		order_to_remove_from_queue = PriorityQueue.objects.get(order_id=process_list[0])
-		order_to_remove_from_queue.delete()
+		##order_to_remove_from_queue = PriorityQueue.objects.get(order_id=process_list[0])
+		##order_to_remove_from_queue.delete()
 		return context
 
 
