@@ -422,9 +422,24 @@ class WarehousePersonnelHome(ListView):
 		context['user'] = User.objects.get(pk=self.id)
 		priority_queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in priority_queue_record_list]
+		high_orders = []
+		medium_orders = []
+		low_orders = []
 		for order in order_list:
 			order.priority = order.get_priority_display()
-		context['order_list'] = order_list
+			if order.priority == "High":
+				high_orders.append(order)
+			elif order.priority == "Medium":
+				medium_orders.append(order)
+			else:
+				low_orders.append(order)
+			order.status = order.get_status_display()
+		order_to_display = []
+		order_to_display.extend(high_orders)
+		order_to_display.extend(medium_orders)
+		order_to_display.extend(low_orders)
+
+		context['order_list'] = order_to_display
 		return context
 
 class WarehousePersonnelProcessOrder(ListView):
@@ -492,9 +507,9 @@ class WarehousePersonnelGenerateSL(ListView):
 
 		p = canvas.Canvas(response)
 
-		p.drawString(100,100,'OrderNumber: '+str(order.pk))
-		p.drawString(100,200,'Contents: '+str(item_list))
-		p.drawString(100,300,'destination '+str(destination))
+		p.drawString(80,400,'OrderNumber: '+str(order.pk))
+		p.drawString(80,20,'Contents: '+str(item_list))
+		p.drawString(80,50,'destination '+str(destination))
 
 		p.showPage()
 		p.save()
