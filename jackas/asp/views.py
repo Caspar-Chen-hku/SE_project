@@ -492,7 +492,7 @@ class WarehousePersonnelGenerateSL(ListView):
 			if elem.order_id == order:
 				item_name = Item.objects.get(pk=elem.item_id.pk).item_name
 				#item_list.append((item_name,elem.item_quantity))
-				p.drawString(100, length, 'Item_Name: ' + str(item_name)+'   Item_Quantity'+str(elem.item_quantity))
+				p.drawString(100, length, 'Item_Name: ' + str(item_name)+'   Item_Quantity:'+str(elem.item_quantity))
 				length=length+50
 		p.drawString(100, length, 'destination: ' + str(destination))
 		p.showPage()
