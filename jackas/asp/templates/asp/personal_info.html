@@ -77,12 +77,12 @@
 
           {% if user.clinic_id.clinic_name %}
 
-          <li style="margin-top: 20px;">
-              Clinic Name : <input type="text" name="clinic_name" value="{{user.clinic_id.clinic_name}}">     
+          <li style="margin-top: 20px;" onclick="cannotChange3(this)">
+              Clinic Name :  <input id="clinic_name" type="text" value="{{user.clinic_id.clinic_name}}" disabled > <span id="namemsg"></span>
           </li>  
 
-          <li style="margin-top: 20px;">
-              Clinic Address : <input type="text" name="clinic_address" value="{{user.clinic_id.clinic_address}}">     
+          <li style="margin-top: 20px;" onclick="cannotChange4(this)">
+              Clinic Address : <input id="clinic_addr" type="text" value="{{user.clinic_id.clinic_address}}" disabled > <span id="namemsg"></span>
           </li>    
 
           {% endif %}
@@ -109,6 +109,7 @@
   modified1 = false;
   modified2 = false;
   modified3 = false;
+  modified4 = false;
 
   function cannotChange1(elem){
     if (!modified1){
@@ -122,6 +123,21 @@
       elem.innerHTML += "Cannot be changed!";
       modified2 = true;
     }
+  }
+
+  function cannotChange3(elem){
+    if (!modified3){
+      elem.innerHTML += "Cannot be changed!";
+      modified3 = true;
+    }
+  }
+
+  function cannotChange4(elem){
+    if (!modified4){
+      elem.innerHTML += "Cannot be changed!";
+      modified4 = true;
+    }
+  }
 
   function viewHome(id,role){
     $('<form action="/asp/view_home" method="GET"/>')
@@ -130,8 +146,6 @@
         .appendTo($(document.body)) //it has to be added somewhere into the <body>
         .submit();
   }
-  
-}
 </script>
 </body>
 </html>
