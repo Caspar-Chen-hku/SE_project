@@ -2,7 +2,7 @@
 var totalWeight = 0.0;
 var currentOrder = {};
 var weights = {};
-var maxWeight = 25.0;
+var maxWeight = 23.8;
 var currentCat = "";
 
 function constructOrder(userid){
@@ -17,9 +17,10 @@ function constructOrder(userid){
     num_order = Object.keys(currentOrder).length;
     priority = document.getElementById("priority_list").value;
 
-    myform = $('<form action="http://127.0.0.1:8000/asp/clinic_manager/construct_order" method="GET"/>')
+    weightIncludingContainer = totalWeight + 1.2;
+    myform = $('<form action="/asp/clinic_manager/construct_order" method="GET"/>')
         .append($('<input type="hidden" name="num" value=' + num_order + '>'))
-        .append($('<input type="hidden" name="weight" value=' + totalWeight + '>'))
+        .append($('<input type="hidden" name="weight" value=' + weightIncludingContainer + '>'))
         .append($('<input type="hidden" name="priority" value=' + priority + '>'))
         .append($('<input type="hidden" name="user" value=' + userid + '>'));
 
@@ -67,7 +68,7 @@ function updateVar(itemid, quantity){
 }
 
 function updateOrder(itemid, itemweight, quantity){
-    console.log("updateOrder");
+    console.log("maxWeight: "+maxWeight);
     exist = false;
     for (key in currentOrder){
         if (key==itemid){

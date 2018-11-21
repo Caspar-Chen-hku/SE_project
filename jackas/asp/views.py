@@ -251,8 +251,22 @@ class DispatcherViewQueue(ListView):
 		order_list = [elem.order_id for elem in queue_record_list]
 		for order in order_list:
 			order.priority = order.get_priority_display()
-		context['order_list'] = order_list
+		context['order_list'] = reorderQueue(order_list)
 		return context
+
+def calculatePackage(reordered_list):
+	package = []
+	total_weight = 0
+	i = 0
+	while total_weight <= 25 and i < len(reordered_list):
+		package.append(reordered_list[i])
+		total_weight += reordered_list[i].weight
+		i += 1
+		if i >= len(reordered_list):
+			break
+		elif total_weight + reordered_list[i].weight > 25:
+			break	
+	return package
 
 class DispatcherViewPackage(ListView):
 	template_name = 'asp/view_package.html'
@@ -265,17 +279,9 @@ class DispatcherViewPackage(ListView):
 		context['user'] = User.objects.get(pk = self.id)
 		queue_record_list = DispatchQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
-		package = []
-		total_weight = 0
-		i = 0
-		while total_weight <= 25 and i < len(order_list):
-			package.append(order_list[i])
-			total_weight += order_list[i].weight
-			i += 1
-			if i >= len(order_list):
-				break
-			elif total_weight + order_list[i].weight > 25:
-				break
+		reordered_list = reorderQueue(order_list)
+
+		package = calculatePackage(reordered_list)
 		total_weight = sum([elem.weight for elem in package])
 		context['order_list'] = package
 		context['total_weight'] = total_weight
@@ -286,17 +292,9 @@ class DispatcherViewItinerary(ListView):
 		# generate package
 		queue_record_list = DispatchQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
-		package = []
-		total_weight = 0
-		i = 0
-		while total_weight <= 25 and i < len(order_list):
-			package.append(order_list[i])
-			total_weight += order_list[i].weight
-			i += 1
-			if i >= len(order_list):
-				break
-			elif total_weight + order_list[i].weight > 25:
-				break
+
+		reordered_list = reorderQueue(order_list)
+		package = calculatePackage(reordered_list)
 
 		# generate distance list
 		clinic_distance_list = Distance.objects.all()
@@ -361,19 +359,11 @@ class DispatcherConfirmDispatch(ListView):
 		
 		queue_record_list = DispatchQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
-		package = []
-		total_weight = 0
-		i = 0
-		while total_weight <= 25 and i < len(order_list):
-			package.append(order_list[i])
-			total_weight += order_list[i].weight
-			i += 1
-			if i >= len(order_list):
-				break
-			elif total_weight + order_list[i].weight > 25:
-				break
+
+		reordered_list = reorderQueue(order_list)
+		package = calculatePackage(reordered_list)
 		for order in package:
-			order_to_update = Order.objects.get(id=order.id)
+			order_to_update = Order.objects.get(pk=order.pk)
 			order_to_update.status = 'DI'
 			order_to_update.dispatching_time = datetime.now()
 			order_to_update.dispatcher_id = User.objects.get(pk = self.id)
@@ -382,6 +372,26 @@ class DispatcherConfirmDispatch(ListView):
 			order_to_remove_from_queue.delete()
 		
 		return redirect('/asp/dispatcher/'+str(self.id)+'/home')
+
+def reorderQueue(order_list):
+	high_orders = []
+	medium_orders = []
+	low_orders = []
+
+	for order in order_list:
+		order.priority = order.get_priority_display()
+		if order.priority == "High":
+			high_orders.append(order)
+		elif order.priority == "Medium":
+			medium_orders.append(order)
+		else:
+			low_orders.append(order)
+		order.status = order.get_status_display()
+	order_to_display = []
+	order_to_display.extend(high_orders)
+	order_to_display.extend(medium_orders)
+	order_to_display.extend(low_orders)
+	return order_to_display
 
 class WarehousePersonnelHome(ListView):
 	template_name = 'asp/priority_queue_list.html'
@@ -392,22 +402,7 @@ class WarehousePersonnelHome(ListView):
 		context['user'] = User.objects.get(pk=self.id)
 		priority_queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in priority_queue_record_list]
-		high_orders = []
-		medium_orders = []
-		low_orders = []
-		for order in order_list:
-			order.priority = order.get_priority_display()
-			if order.priority == "High":
-				high_orders.append(order)
-			elif order.priority == "Medium":
-				medium_orders.append(order)
-			else:
-				low_orders.append(order)
-			order.status = order.get_status_display()
-		order_to_display = []
-		order_to_display.extend(high_orders)
-		order_to_display.extend(medium_orders)
-		order_to_display.extend(low_orders)
+		order_to_display = reorderQueue(order_list)
 
 		context['order_list'] = order_to_display
 		return context
@@ -424,22 +419,7 @@ class WarehousePersonnelProcessOrder(ListView):
 
 		priority_queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in priority_queue_record_list]
-		high_orders = []
-		medium_orders = []
-		low_orders = []
-		for order in order_list:
-			order.priority = order.get_priority_display()
-			if order.priority == "High":
-				high_orders.append(order)
-			elif order.priority == "Medium":
-				medium_orders.append(order)
-			else:
-				low_orders.append(order)
-			order.status = order.get_status_display()
-		order_to_display = []
-		order_to_display.extend(high_orders)
-		order_to_display.extend(medium_orders)
-		order_to_display.extend(low_orders)
+		order_to_display = reorderQueue(order_list)
 
 		order_to_process = order_to_display[0]
 		item_list = OrderContainsItem.objects.filter(order_id=order_to_process).all()
@@ -460,22 +440,7 @@ class WarehousePersonnelConfirmOrder(ListView):
 		queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
 		
-		high_orders = []
-		medium_orders = []
-		low_orders = []
-		for order in order_list:
-			order.priority = order.get_priority_display()
-			if order.priority == "High":
-				high_orders.append(order)
-			elif order.priority == "Medium":
-				medium_orders.append(order)
-			else:
-				low_orders.append(order)
-			order.status = order.get_status_display()
-		order_to_display = []
-		order_to_display.extend(high_orders)
-		order_to_display.extend(medium_orders)
-		order_to_display.extend(low_orders)
+		order_to_display = reorderQueue(order_list)
 
 		order = order_to_display[0]
 
@@ -501,22 +466,7 @@ class WarehousePersonnelGenerateSL(ListView):
 		queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
 		
-		high_orders = []
-		medium_orders = []
-		low_orders = []
-		for order in order_list:
-			order.priority = order.get_priority_display()
-			if order.priority == "High":
-				high_orders.append(order)
-			elif order.priority == "Medium":
-				medium_orders.append(order)
-			else:
-				low_orders.append(order)
-			order.status = order.get_status_display()
-		order_to_display = []
-		order_to_display.extend(high_orders)
-		order_to_display.extend(medium_orders)
-		order_to_display.extend(low_orders)
+		order_to_display = reorderQueue(order_list)
 
 		order = order_to_display[0]
 		
