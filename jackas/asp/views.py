@@ -170,7 +170,6 @@ class CMConstructOrder(ListView):
 
 
 class CMViewItems(ListView):
-	"""docstring for CMViewItems"""
 	template_name = 'asp/cm_home.html'
 
 	def get_queryset(self): 
@@ -218,57 +217,26 @@ class CMViewOrder(ListView):
 		return context
 
 class CMCancelOrder(ListView):
-	template_name = 'asp/view_order.html'
-
-	def get_queryset(self):
-		self.id = self.kwargs['id']
-		self.orderid = self.kwargs['orderid']
+	def get(self, request, *args, **kwargs):
+		self.id = kwargs['id']
+		self.orderid = kwargs['orderid']
 		order_to_update = Order.objects.get(id=self.orderid)
 		order_to_update.status = 'CA'
 		order_to_update.canceled_time = datetime.now()
 		order_to_update.save()
 		order_to_remove_from_queue = PriorityQueue.objects.get(order_id = order_to_update)
 		order_to_remove_from_queue.delete()
-		return Order.objects.filter(owner_id__pk=self.id).all()
-
-	def get_context_data(self, **kwargs): 
-		context = super().get_context_data(**kwargs) 
-		context['user'] = User.objects.get(pk = self.id)
-		all_orders = Order.objects.filter(owner_id = context['user']).all()
-
-		canceled_orders = [order for order in all_orders if order.status == 'CA']
-		normal_orders = [order for order in all_orders if not order.status == 'CA']
-		delivered_orders = [order for order in normal_orders if order.status == 'DE']
-		processing_orders = [order for order in normal_orders if not order.status == 'DE']
-		canceled_orders.extend(delivered_orders)
-		context['processing_orders'] = processing_orders
-		context['other_orders'] = canceled_orders
-		return context
+		return redirect('/asp/clinic_manager/'+str(self.id)+'/view_order')
 
 class CMConfirmOrder(ListView):
-	template_name = 'asp/view_order.html'
-
-	def get_queryset(self):
-		self.id = self.kwargs['id']
-		self.orderid = self.kwargs['orderid']
+	def get(self, request, *args, **kwargs):
+		self.id = kwargs['id']
+		self.orderid = kwargs['orderid']
 		order_to_update = Order.objects.get(id=self.orderid)
 		order_to_update.status = 'DE'
 		order_to_update.dilivered_time = datetime.now()
 		order_to_update.save()
-
-	def get_context_data(self, **kwargs): 
-		context = super().get_context_data(**kwargs) 
-		context['user'] = User.objects.get(pk = self.id)
-		all_orders = Order.objects.filter(owner_id = context['user']).all()
-
-		canceled_orders = [order for order in all_orders if order.status == 'CA']
-		normal_orders = [order for order in all_orders if not order.status == 'CA']
-		delivered_orders = [order for order in normal_orders if order.status == 'DE']
-		processing_orders = [order for order in normal_orders if not order.status == 'DE']
-		canceled_orders.extend(delivered_orders)
-		context['processing_orders'] = processing_orders
-		context['other_orders'] = canceled_orders
-		return context
+		return redirect('/asp/clinic_manager/'+str(self.id)+'/view_order')
 
 class DispatcherViewQueue(ListView):
 	template_name = 'asp/dispatch_queue_list.html'
