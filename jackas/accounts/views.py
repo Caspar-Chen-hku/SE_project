@@ -42,15 +42,10 @@ def signup_cm(request):
             new_user.lastname = form.cleaned_data.get('last_name')
             new_user.email = form.cleaned_data.get('email')
             new_user.role = 'CM'
-            try:
-                clinic = Clinic.objects.get(clinic_name = form.cleaned_data.get('clinic_name'))
-                new_user.clinic_id = clinic
-            except Clinic.DoesNotExist:
-                new_clinic = Clinic()
-                new_clinic.clinic_name = form.cleaned_data.get('clinic_name')
-                new_clinic.clinic_address = form.cleaned_data.get('clinic_address')
-                new_clinic.save()
-                new_user.clinic_id = new_clinic
+            clinic_order = form.cleaned_data.get('clinic_name')
+            clinic_name = dict(form.fields['clinic_name'].choices)[int(clinic_order)]
+            clinic = Clinic.objects.get(clinic_name = clinic_name)
+            new_user.clinic_id = clinic
             new_user.save()
             
             user = authenticate(username=username, password=raw_password)

@@ -1,3 +1,4 @@
+import itertools, csv, io
 from django.contrib.auth.models import User as DjangoUser
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -6,10 +7,8 @@ from datetime import datetime
 from django.template import loader
 from django.http import HttpResponseRedirect
 from asp.models import User, Clinic, Token, Order, Item, OrderContainsItem, PriorityQueue, DispatchQueue, Category, Distance
-import itertools, csv
 from django.shortcuts import redirect
 from django.contrib.auth.models import User as AuthUser
-import io
 from django.http import FileResponse
 from reportlab.pdfgen import canvas
 from reportlab.graphics import renderPDF
@@ -54,7 +53,6 @@ class PersonalHome(ListView):
 			return redirect("/asp/warehouse_personnel/"+str(userid)+"/home")
 
 class PersonalInfo(ListView):
-	"""docstring for CMViewItems"""
 	template_name = 'asp/personal_info.html'
 
 	def get_queryset(self): 
