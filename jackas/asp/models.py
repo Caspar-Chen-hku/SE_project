@@ -52,6 +52,7 @@ class Order(models.Model):
 		choices=STATUS_CHOICES,
 		default='QFP',
 	)
+	address_to_shipping_label = models.CharField(max_length=200)
 	placing_time = models.DateTimeField()
 	processing_time = models.DateTimeField(null=True, blank=True)
 	processor_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, db_constraint=False, related_name='processor_id')

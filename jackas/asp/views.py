@@ -12,6 +12,7 @@ from django.contrib.auth.models import User as AuthUser
 from django.http import FileResponse
 from reportlab.pdfgen import canvas
 from reportlab.graphics import renderPDF
+from django.core.mail import EmailMessage
 
 class HomePage(ListView):
 	def get(self,request):
@@ -258,11 +259,11 @@ def calculatePackage(reordered_list):
 	i = 0
 	while total_weight <= 25 and i < len(reordered_list):
 		package.append(reordered_list[i])
-		total_weight += reordered_list[i].weight
+		total_weight += float(reordered_list[i].weight) + float(1.2)
 		i += 1
 		if i >= len(reordered_list):
 			break
-		elif total_weight + reordered_list[i].weight > 25:
+		elif total_weight + float(reordered_list[i].weight) + float(1.2) > 25:
 			break	
 	return package
 
@@ -282,7 +283,7 @@ class DispatcherViewPackage(ListView):
 		package = calculatePackage(reordered_list)
 		total_weight = sum([elem.weight for elem in package])
 		context['order_list'] = package
-		context['total_weight'] = total_weight
+		context['total_weight'] = str(total_weight) + " + 1.2 * " + str(len(package)) + " = " + str(float(total_weight)+len(package)*1.2)
 		return context
 		
 class DispatcherViewItinerary(ListView):
@@ -368,6 +369,26 @@ class DispatcherConfirmDispatch(ListView):
 			order_to_update.save()
 			order_to_remove_from_queue = DispatchQueue.objects.get(order_id = order)
 			order_to_remove_from_queue.delete()
+
+			to_addr = order_to_update.owner_id.email
+			owner_name = order_to_update.owner_id.firstname
+			subject = 'Your order ' + str(order.pk) + ' is dispatched! - ASP'
+			body = "Dear " + str(owner_name) + ",\n\nYour order has been dispatched.\n\n" \
+					"\n\nOrder ID: " + str(order.pk) + "" \
+					"\nDispatched Time: " + str(order_to_update.dispatching_time) + "" \
+					"\nDispatched by: " + str(order_to_update.dispatcher_id.username) + "" \
+					"\n\nAttached you can see the shipping lable as your reference. Thanks for using ASP!\n" \
+					"\nOr see the file here: " + str(order_to_update.address_to_shipping_label)
+			from_addr = 'admin@asp.com'
+			email = EmailMessage(
+				subject,
+				body,
+				from_addr,
+				[to_addr],
+			)
+			attachment = open(order_to_update.address_to_shipping_label, 'rb')
+			email.attach('shipping_label.pdf',attachment.read(),'application/pdf')
+			email.send(fail_silently=False)
 		
 		return redirect('/asp/dispatcher/'+str(self.id)+'/home')
 
@@ -467,6 +488,9 @@ class WarehousePersonnelGenerateSL(ListView):
 		order_to_display = reorderQueue(order_list)
 
 		order = order_to_display[0]
+		order_to_update = Order.objects.get(pk=order.pk)
+		order_to_update.address_to_shipping_label = "Z:\HKU\Year 4\Year 4 Sem 1\COMP 3297 Software Engineering\SE_project\jackas\sent_emails\shipping_label.pdf"
+		order_to_update.save()
 		
 		Order_Item = OrderContainsItem.objects.all()
 
