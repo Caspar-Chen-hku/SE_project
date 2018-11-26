@@ -1,4 +1,4 @@
-import itertools, csv, io
+import itertools, csv, io, os
 from django.contrib.auth.models import User as DjangoUser
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -13,6 +13,9 @@ from django.http import FileResponse
 from reportlab.pdfgen import canvas
 from reportlab.graphics import renderPDF
 from django.core.mail import EmailMessage
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
 
 class HomePage(ListView):
 	def get(self,request):
@@ -81,17 +84,6 @@ class ChangeInfo(ListView):
 		django_user.last_name = lastname
 		django_user.email = email
 		django_user.set_password(password)
-
-		if target_user.role == 'CM':
-			target_clinic = target_user.clinic_id
-
-			clinic_address = request.GET.get('clinic_address',None)
-			clinic_name = request.GET.get('clinic_name',None)
-
-			target_clinic.clinic_address = clinic_address
-			target_clinic.clinic_name = clinic_name
-
-			target_clinic.save()
 		
 		target_user.password = password
 
@@ -171,16 +163,18 @@ class CMConstructOrder(ListView):
 class CMViewItems(ListView):
 	template_name = 'asp/cm_home.html'
 
-	def get_queryset(self): 
-		self.category = self.kwargs['category']
-		return Item.objects.filter(category__pk=self.category).all()
+	def get_queryset(self):
+		categories = Category.objects.all()
+		self.category = categories[0]
+		return Item.objects.filter(category=self.category).all()
 
 	def get_context_data(self, **kwargs): 
 		self.id = self.kwargs['id'] 
 		context = super().get_context_data(**kwargs) 
 		context['user'] = User.objects.get(pk = self.id) 
 		context['categories'] = Category.objects.all()
-		context['cat'] = Category.objects.get(pk = self.category)
+		categories = Category.objects.all()
+		context['cat'] = categories[0]
 		return context
 
 class CMViewItemInfo(ListView):
@@ -481,7 +475,7 @@ class WarehousePersonnelGenerateSL(ListView):
 	# need to install reportlab
 	def get(self, request, *args, **kwargs):
 		response = HttpResponse(content_type='application/pdf')
-		response['Content-Disposition'] = 'attachment; filename="shipping_label.pdf"'
+		
 		queue_record_list = PriorityQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
 		
@@ -489,8 +483,12 @@ class WarehousePersonnelGenerateSL(ListView):
 
 		order = order_to_display[0]
 		order_to_update = Order.objects.get(pk=order.pk)
-		order_to_update.address_to_shipping_label = "Z:\HKU\Year 4\Year 4 Sem 1\COMP 3297 Software Engineering\SE_project\jackas\sent_emails\shipping_label.pdf"
+
+		filename = "shipping_label-" + str(order.pk) + ".pdf"
+		order_to_update.address_to_shipping_label = EMAIL_FILE_PATH + "\\" + filename
 		order_to_update.save()
+
+		response['Content-Disposition'] = 'attachment; filename=' + filename
 		
 		Order_Item = OrderContainsItem.objects.all()
 

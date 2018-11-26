@@ -14,7 +14,7 @@ urlpatterns = [
 	path('change_info',
 		views.ChangeInfo.as_view(),
 		name='change_info'),
-	path('clinic_manager/<int:id>/home/<int:category>',
+	path('clinic_manager/<int:id>/home',
 		views.CMViewItems.as_view(),
 		name='clinic_manager-home'),
 	path('clinic_manager/item_info/<int:id>',
