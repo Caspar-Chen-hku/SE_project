@@ -8,7 +8,6 @@ from django.template import loader
 from django.http import HttpResponseRedirect
 from asp.models import User, Clinic, Token, Order, Item, OrderContainsItem, PriorityQueue, DispatchQueue, Category, Distance
 from django.shortcuts import redirect
-from django.contrib.auth.models import User as AuthUser
 from django.http import FileResponse
 from reportlab.pdfgen import canvas
 from reportlab.graphics import renderPDF
@@ -33,7 +32,7 @@ class ViewHome(ListView):
 
 		if role == 'CM':
 			category_id = Category.objects.get(category_name='IV Fluids').pk
-			return redirect('/asp/clinic_manager/'+str(userid)+'/home/'+str(category_id))
+			return redirect('/asp/clinic_manager/'+str(userid)+'/home')
 		elif role == 'D':
 			return redirect('/asp/dispatcher/'+str(userid)+'/home')
 		else:
@@ -50,7 +49,7 @@ class PersonalHome(ListView):
 
 		if user.role == 'CM':
 			category_id = Category.objects.get(category_name='IV Fluids').pk
-			return redirect('/asp/clinic_manager/'+str(userid)+'/home/'+str(category_id))
+			return redirect('/asp/clinic_manager/'+str(userid)+'/home')
 		elif user.role == 'D':
 			return redirect('/asp/dispatcher/'+str(userid)+'/home')
 		else:
@@ -88,14 +87,6 @@ class ChangeInfo(ListView):
 		target_user.password = password
 
 		target_user.save()
-
-		# change info for auth_user
-		target_auth_user = AuthUser.objects.get(username=username)
-		target_auth_user.firstname = firstname
-		target_auth_user.lastname = lastname
-		target_auth_user.email = email
-		target_auth_user.set_password(password)
-		target_auth_user.save()
 
 		django_user.save()
 		return redirect('/asp/'+str(target_user.pk)+'/personal_info')
