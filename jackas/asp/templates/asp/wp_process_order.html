@@ -98,16 +98,16 @@
 <h1>Order Details</h1>
 <table id="orders">
   <tr>
-    <th>Item Name</th>
-    <th>Quantity</th>
-    <th>Destination</th>
+    <th style="text-align: center;">Item Name</th>
+    <th style="text-align: center;">Quantity</th>
+    <th style="text-align: center;">Destination</th>
   </tr>
 
   {% for item in item_list %}
   <tr>
     <td>{{item.item_id}}</td>
     <td>{{item.item_quantity}}</td>
-    <td>{{order.destination_id.clinic_address}}</td>
+    <td>{{order.destination_id.clinic_name}}</td>
   </tr>
   {% endfor %}
 

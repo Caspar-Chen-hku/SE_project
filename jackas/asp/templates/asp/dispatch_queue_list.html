@@ -81,21 +81,19 @@
     <button onclick="location.href='dispatch_order'" id="dispatch-button">Dispatch</button>
     <table id="orders">
       <tr>
-        <th>Order ID</th>
-        <th>Owner Name</th> 
-        <th>Destination</th>
-        <th>Priority</th>
-        <th>Weight</th>
-        <th>Order Details</th>
+        <th style="text-align: center;">Order ID</th>
+        <th style="text-align: center;">Owner Name</th> 
+        <th style="text-align: center;">Destination</th>
+        <th style="text-align: center;">Priority</th>
+        <th style="text-align: center;">Weight</th>
       </tr>
       {% for order in order_list %}
       <tr>
         <td>{{order.id}}</td>
         <td>{{order.owner_id.firstname}} {{order.owner_id.lastname}}</td> 
-        <td>{{order.destination_id.clinic_address}}</td>
+        <td>{{order.destination_id.clinic_name}}</td>
         <td>{{order.priority}}</td>
         <td>{{order.weight}}</td>
-        <td>Under Construction</td>
       </tr>
       {% endfor %} 
     </table>

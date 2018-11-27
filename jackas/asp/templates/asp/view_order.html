@@ -67,18 +67,16 @@
             <th>Order ID</th>
             <th>Priority</th>
             <th>Weight</th>
-            <th>Order Details</th>
             <th>Status</th>
             <th>Time</th>
             <th>Operation</th>
           </tr>
           {% for order in processing_orders %}
           <tr>
-            <td>{{order.id}}</td>
-            <td>{{order.priority}}</td>
-            <td>{{order.weight}}</td>
-            <td>Under Construction</td>
-            <td>{{order.status}}</td>
+            <td style="text-align: center;">{{order.id}}</td>
+            <td style="text-align: center;">{{order.priority}}</td>
+            <td style="text-align: center;">{{order.weight}}</td>
+            <td style="text-align: center;">{{order.status}}</td>
             <td>
                 Placing time: 
                 {% if order.placing_time %}
@@ -102,10 +100,10 @@
 
             </td>
             <td>
-                {% if order.status == 'DI' %}
+                {% if order.status == 'Dispatched' %}
                 <button onclick="location.href='/asp/clinic_manager/{{user.id}}/confirm_order/{{order.id}}'">Delivered</button>
                 {% endif %}
-                {% if order.status == 'QFP' %}
+                {% if order.status == 'Queued for Processing' %}
                     <button onclick="location.href='/asp/clinic_manager/{{user.id}}/cancel_order/{{order.id}}'">Cancel</button>
                 {% endif %}
             </td>
@@ -116,25 +114,23 @@
         <h3>Other Orders</h3>
         <table id="orders">
           <tr>
-            <th>Order ID</th>
-            <th>Priority</th>
-            <th>Weight</th>
-            <th>Order Details</th>
-            <th>Status</th>
-            <th>Delivered/Canceled Time</th>
+            <th style="text-align: center;">Order ID</th>
+            <th style="text-align: center;">Priority</th>
+            <th style="text-align: center;">Weight</th>
+            <th style="text-align: center;">Status</th>
+            <th style="text-align: center;">Delivered/Canceled Time</th>
           </tr>
           {% for order in other_orders %}
           <tr>
             <td>{{order.id}}</td>
             <td>{{order.priority}}</td>
             <td>{{order.weight}}</td>
-            <td>Under Construction</td>
             <td>{{order.status}}</td>
             <td>
-                {% if order.status == 'CA' %}
+                {% if order.status == 'Canceled' %}
                     {{order.canceled_time}}
                 {% endif %}
-                {% if order.status == 'DE' %}
+                {% if order.status == 'Delivered' %}
                     {{order.dilivered_time}}
                 {% endif %}
             </td>

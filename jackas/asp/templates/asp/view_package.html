@@ -98,7 +98,6 @@
     <th>Destination</th>
     <th>Priority</th>
     <th>Weight</th>
-    <th>Order Details</th>
   </tr>
   {% for order in order_list %}
   <tr>
@@ -107,7 +106,6 @@
     <td>{{order.destination_id.clinic_address}}</td>
     <td>{{order.priority}}</td>
     <td>{{order.weight}}</td>
-    <td>Under Construction</td>
   </tr>
   {% endfor %} 
 </table>

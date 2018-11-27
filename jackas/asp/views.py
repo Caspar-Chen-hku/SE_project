@@ -192,8 +192,10 @@ class CMViewOrder(ListView):
 		canceled_orders.extend(delivered_orders)
 
 		for order in processing_orders:
+			order.status = order.get_status_display()
 			order.priority = order.get_priority_display()
 		for order in canceled_orders:
+			order.status = order.get_status_display()
 			order.priority = order.get_priority_display()
 
 		context['processing_orders'] = processing_orders
@@ -286,7 +288,6 @@ class DispatcherViewItinerary(ListView):
 		distance = {}
 		for elem in clinic_distance_list:
 			distance[(elem.source_clinic_id.id, elem.destination_clinic_id.id)] = distance[(elem.destination_clinic_id.id,elem.source_clinic_id.id)] = elem.distance
-		print(distance)
 
 		# generate clinic list
 		clinic = {}
@@ -312,6 +313,9 @@ class DispatcherViewItinerary(ListView):
 		writer.writerow(['latitude', 'longitude', 'altitude'])
 		for item in shortest[0]:
 			writer.writerow([clinic[item][0],clinic[item][1],clinic[item][2]])
+
+		# final destination should be the hospital
+		writer.writerow(["22.270257", "114.131376", "161"])
 		return response
 
 	def calCosts(self, routes, distance, clinic_list):
