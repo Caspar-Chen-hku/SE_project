@@ -4,6 +4,12 @@ ASP is a drone-based delivery management system, designed to centralize the medi
 
 The pilot system will serve only a small number of clinics selected from the Southern District and the Islands. Supplies for those clinics will be warehoused and dispatched from Queen Mary Hospital.
 
+## Dependencies [IMPORTANT]
+
+- This project is based on the Django framework. Refer to the [Django Tutorial](https://www.djangoproject.com/) to install Django.
+- The generation of PDF file dependes on the `reportlab` library. Install it using `pip install reportlab`.
+- Change the backend mail server to any SMTP server if needed. Currently it's using a file-based backend.
+
 ## Usage & Limitations
 
 This section specifies some usage rules for the ASP system. Due to time limit or design considerations, there are some limitations in this web applications.

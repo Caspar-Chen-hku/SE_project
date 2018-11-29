@@ -174,6 +174,38 @@ class CMViewItemInfo(ListView):
 		self.id = self.kwargs['id']
 		return Item.objects.filter(pk = self.id).all()
 
+class CMViewShippingLabel(ListView):
+	def get(self, request, *args, **kwargs):
+		response = HttpResponse(content_type='application/pdf')
+		self.order_id = self.kwargs['id']
+		order = Order.objects.get(pk=self.order_id)
+
+		filename = "shipping_label-" + str(order.pk) + ".pdf"
+
+		response['Content-Disposition'] = 'attachment; filename=' + filename
+		
+		Order_Item = OrderContainsItem.objects.all()
+
+		destination = Clinic.objects.get(pk=order.destination_id.pk)
+		p = canvas.Canvas(response)
+		p.setTitle("Shipping Label - ASP")
+		p.drawString(100, 800, 'OrderNumber: ' + str(order.pk))
+
+		p.drawString(300, 800, 'Priority: ' + str(order.priority))
+		p.drawString(100, 750, 'Order info:')
+		length=730
+		for elem in Order_Item:
+			if elem.order_id == order:
+				item_name = Item.objects.get(pk=elem.item_id.pk).item_name
+				p.drawString(100, length, 'Item Name: ' + str(item_name)+'    Quantity: '+str(elem.item_quantity))
+				length=length-20
+		p.drawString(100, length-20, 'Destination: ' + str(destination.clinic_name))
+		p.drawString(100, length-40, 'Address: '+str(destination.clinic_address))
+		p.showPage()
+		p.save()
+
+		return response
+
 class CMViewOrder(ListView):
 	template_name = 'asp/view_order.html'
 
@@ -371,7 +403,7 @@ class DispatcherConfirmDispatch(ListView):
 					"\nDispatched Time: " + str(order_to_update.dispatching_time) + "" \
 					"\nDispatched by: " + str(order_to_update.dispatcher_id.username) + "" \
 					"\n\nAttached you can see the shipping lable as your reference. Thanks for using ASP!\n" \
-					"\nOr see the file here: " + str(order_to_update.address_to_shipping_label)
+					"\nOr see the file here: http://127.0.0.1:8000/asp/clinic_manager/shipping_label/" + str(order.pk)
 			from_addr = 'admin@asp.com'
 			email = EmailMessage(
 				subject,
@@ -496,7 +528,7 @@ class WarehousePersonnelGenerateSL(ListView):
 		p.setTitle("Shipping Label - ASP")
 		p.drawString(100, 800, 'OrderNumber: ' + str(order.pk))
 
-		p.drawString(300, 800, 'Priority: ' + order.priority)
+		p.drawString(300, 800, 'Priority: ' + str(order.priority))
 		p.drawString(100, 750, 'Order info:')
 		length=730
 		for elem in Order_Item:
