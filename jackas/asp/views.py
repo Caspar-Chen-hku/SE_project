@@ -1,4 +1,4 @@
-import itertools, csv, io, os
+import itertools, csv, io, os, tsp
 from django.contrib.auth.models import User as DjangoUser
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -274,35 +274,38 @@ class DispatcherViewPackage(ListView):
 		return context
 		
 class DispatcherViewItinerary(ListView):
+	MAXIMUM = 10000
 	def get(self, request):
 		# generate package
 		queue_record_list = DispatchQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
 
 		reordered_list = reorderQueue(order_list)
-		package = calculatePackage(reordered_list)
+		package = calculatePackage(reordered_list) #package is essentially an order list
+		clinic_list = [order.destination_id for order in package]
 
-		# generate distance list
-		clinic_distance_list = Distance.objects.all()
-		clinic_list = Clinic.objects.all()
-		distance = {}
-		for elem in clinic_distance_list:
-			distance[(elem.source_clinic_id.id, elem.destination_clinic_id.id)] = distance[(elem.destination_clinic_id.id,elem.source_clinic_id.id)] = elem.distance
+		#clinics include hospital as the first element
+		clinics = [(22.270257,22.270257,161,0)]
+		for i in range(len(clinic_list)):
+			clinics.append((clinic_list[i].latitude, clinic_list[i].longitude, clinic_list[i].altitude, clinic_list[i].distance_to_hospital))
 
-		# generate clinic list
-		clinic = {}
-		for elem in clinic_list:
-			clinic[elem.pk] = (elem.latitude, elem.longitude, elem.altitude, elem.distance_to_hospital)
+		distance = []
 
-		# generate destination list
-		route_list = []
-		for order in package:
-			route_list.append(order.destination_id.id)
-			distance[(order.id, order.id)] = 0
-		route_list = list(set(route_list))
+		new_list = []
+		for i in range(len(clinic_list)):
+			new_list.append(clinic_list[i].distance_to_hospital)
+		distance.append(new_list)
 
-		routes_order = self.genRoutes(len(route_list), route_list)
-		shortest = self.calCosts(routes_order, distance, clinic)
+		for i in range(len(clinic_list)):
+			new_list = [clinic_list[i].distance_to_hospital]
+			for j in range(len(clinic_list)):
+				new_list.append(Distance.objects.get(source_clinic_id = clinic_list[i], destination_clinic_id = clinic_list[j]).distance)
+			distance.append(new_list)
+
+		r = range(len(distance))
+		dist = {(i, j): distance[i][j] for i in r for j in r}
+		shortest = tsp.tsp(r, dist)
+		#result is in the form of (cost, list of indices)
 
 		response = HttpResponse(content_type='text/csv')
 		output_name = 'itinerary'
@@ -311,12 +314,13 @@ class DispatcherViewItinerary(ListView):
 		
 		writer = csv.writer(response)
 		writer.writerow(['latitude', 'longitude', 'altitude'])
-		for item in shortest[0]:
-			writer.writerow([clinic[item][0],clinic[item][1],clinic[item][2]])
+		for item in shortest[1]:
+			writer.writerow([clinics[item][0],clinics[item][1],clinics[item][2]])
 
 		# final destination should be the hospital
-		writer.writerow(["22.270257", "114.131376", "161"])
+		writer.writerow(["22.270257", "22.270257", "161"])
 		return response
+
 
 	def calCosts(self, routes, distance, clinic_list):
 		travelCosts = []
