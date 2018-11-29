@@ -315,6 +315,7 @@ class DispatcherViewItinerary(ListView):
 		reordered_list = reorderQueue(order_list)
 		package = calculatePackage(reordered_list) #package is essentially an order list
 		clinic_list = [order.destination_id for order in package]
+		print(clinic_list)
 
 		#clinics include hospital as the first element
 		clinics = [(22.270257,22.270257,161,0)]
@@ -323,18 +324,26 @@ class DispatcherViewItinerary(ListView):
 
 		distance = []
 
-		new_list = []
+		new_list = [0.0]
 		for i in range(len(clinic_list)):
-			new_list.append(clinic_list[i].distance_to_hospital)
+			new_list.append(float(clinic_list[i].distance_to_hospital))
 		distance.append(new_list)
 
 		for i in range(len(clinic_list)):
-			new_list = [clinic_list[i].distance_to_hospital]
+			new_list = [float(clinic_list[i].distance_to_hospital)]
 			for j in range(len(clinic_list)):
-				new_list.append(Distance.objects.get(source_clinic_id = clinic_list[i], destination_clinic_id = clinic_list[j]).distance)
+				if j == i:
+					new_list.append(0.0)
+				else:
+					target = Distance.objects.filter(source_clinic_id__pk = clinic_list[i].pk, destination_clinic_id__pk = clinic_list[j].pk)
+					for elem in target:
+						new_list.append(float(elem.distance))
 			distance.append(new_list)
 
+		print(distance)
+
 		r = range(len(distance))
+		print("r is: "+str(r))
 		dist = {(i, j): distance[i][j] for i in r for j in r}
 		shortest = tsp.tsp(r, dist)
 		#result is in the form of (cost, list of indices)
@@ -346,14 +355,14 @@ class DispatcherViewItinerary(ListView):
 		
 		writer = csv.writer(response)
 		writer.writerow(['latitude', 'longitude', 'altitude'])
-		for item in shortest[1]:
+		for item in shortest[1][1:]:
 			writer.writerow([clinics[item][0],clinics[item][1],clinics[item][2]])
 
 		# final destination should be the hospital
 		writer.writerow(["22.270257", "22.270257", "161"])
 		return response
 
-
+'''
 	def calCosts(self, routes, distance, clinic_list):
 		travelCosts = []
 		for route in routes:
@@ -376,6 +385,7 @@ class DispatcherViewItinerary(ListView):
 		routes = list(map(list, itertools.permutations(route_list)))
 		#inserts the home city, must be the first city in every route
 		return routes
+'''
 
 class DispatcherConfirmDispatch(ListView):
 	def get(self, request, *args, **kwargs):
