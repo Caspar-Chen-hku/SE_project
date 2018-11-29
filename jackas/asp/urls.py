@@ -19,6 +19,8 @@ urlpatterns = [
 		name='clinic_manager-home'),
 	path('clinic_manager/item_info/<int:id>',
 		views.CMViewItemInfo.as_view()),
+	path('clinic_manager/shipping_label/<int:id>',
+		views.CMViewShippingLabel.as_view()),
 	path('clinic_manager/construct_order', 
 		views.CMConstructOrder.as_view(), 
 		name='constructOrder'),
