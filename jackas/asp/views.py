@@ -363,33 +363,8 @@ class DispatcherViewItinerary(ListView):
 	def genRoute(self, distance):
 		r = range(int(math.sqrt(len(distance))))
 		print("r is: "+str(r))
-		#dist = {(i, j): distance[i][j] for i in r for j in r}
+		# dist = {(i, j): distance[i][j] for i in r for j in r}
 		return tsp.tsp(r, distance)
-
-'''
-	def calCosts(self, routes, distance, clinic_list):
-		travelCosts = []
-		for route in routes:
-			travelCost = 0
-			travelCost += clinic_list[route[0]][3]
-			travelCost += clinic_list[route[-1]][3]
-			# Sums up the travel cost
-			for i in range(1, len(route)):
-				# takes an element of route, uses it to find the corresponding coords and calculates the distance
-				travelCost += distance[(route[i-1], route[i])]
-			travelCosts.append(travelCost)
-		# pulls out the smallest travel cost
-		smallestCost = min(travelCosts)
-		print(smallestCost)
-		shortest = (routes[travelCosts.index(smallestCost)], smallestCost)
-		return shortest
-
-	def genRoutes(self, routeLength, route_list):
-		#uses built-in itertools to generate permutations
-		routes = list(map(list, itertools.permutations(route_list)))
-		#inserts the home city, must be the first city in every route
-		return routes
-'''
 
 class DispatcherConfirmDispatch(ListView):
 	def get(self, request, *args, **kwargs):
