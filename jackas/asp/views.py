@@ -1,4 +1,4 @@
-import itertools, csv, io, os, tsp
+import itertools, csv, io, os, tsp, math
 from django.contrib.auth.models import User as DjangoUser
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -302,7 +302,7 @@ class DispatcherViewPackage(ListView):
 		package = calculatePackage(reordered_list)
 		total_weight = sum([elem.weight for elem in package])
 		context['order_list'] = package
-		context['total_weight'] = str(total_weight) + " + 1.2 * " + str(len(package)) + " = " + str(float(total_weight)+len(package)*1.2)
+		context['total_weight'] = str(total_weight) + " + 1.2 * " + str(len(package)) + " = " + str(round(float(total_weight)+len(package)*1.2,2))
 		return context
 		
 class DispatcherViewItinerary(ListView):
@@ -321,32 +321,12 @@ class DispatcherViewItinerary(ListView):
 		clinics = [(22.270257,22.270257,161,0)]
 		for i in range(len(clinic_list)):
 			clinics.append((clinic_list[i].latitude, clinic_list[i].longitude, clinic_list[i].altitude, clinic_list[i].distance_to_hospital))
-
-		distance = []
-
-		new_list = [0.0]
-		for i in range(len(clinic_list)):
-			new_list.append(float(clinic_list[i].distance_to_hospital))
-		distance.append(new_list)
-
-		for i in range(len(clinic_list)):
-			new_list = [float(clinic_list[i].distance_to_hospital)]
-			for j in range(len(clinic_list)):
-				if j == i:
-					new_list.append(0.0)
-				else:
-					target = Distance.objects.filter(source_clinic_id__pk = clinic_list[i].pk, destination_clinic_id__pk = clinic_list[j].pk)
-					for elem in target:
-						new_list.append(float(elem.distance))
-			distance.append(new_list)
-
+		
+		distance = self.calDistance(clinic_list)
 		print(distance)
 
-		r = range(len(distance))
-		print("r is: "+str(r))
-		dist = {(i, j): distance[i][j] for i in r for j in r}
-		shortest = tsp.tsp(r, dist)
 		#result is in the form of (cost, list of indices)
+		shortest = self.genRoute(distance)
 
 		response = HttpResponse(content_type='text/csv')
 		output_name = 'itinerary'
@@ -361,6 +341,30 @@ class DispatcherViewItinerary(ListView):
 		# final destination should be the hospital
 		writer.writerow(["22.270257", "22.270257", "161"])
 		return response
+
+	def calDistance(self,clinic_list):
+		distance = {}
+
+		distance[(0,0)] = 0.0
+		for i in range(len(clinic_list)):
+			distance[(0,i+1)] = float(clinic_list[i].distance_to_hospital)
+
+		for i in range(len(clinic_list)):
+			distance[(i+1,0)] = float(clinic_list[i].distance_to_hospital)
+			for j in range(len(clinic_list)):
+				if j == i:
+					distance[(i+1,j+1)] = 0.0
+				else:
+					target = Distance.objects.filter(source_clinic_id__pk = clinic_list[i].pk, destination_clinic_id__pk = clinic_list[j].pk)
+					for elem in target:
+						distance[(i+1,j+1)] = float(elem.distance)
+		return distance
+
+	def genRoute(self, distance):
+		r = range(int(math.sqrt(len(distance))))
+		print("r is: "+str(r))
+		#dist = {(i, j): distance[i][j] for i in r for j in r}
+		return tsp.tsp(r, distance)
 
 '''
 	def calCosts(self, routes, distance, clinic_list):
