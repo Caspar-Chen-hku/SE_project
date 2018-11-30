@@ -8,7 +8,7 @@ The pilot system will serve only a small number of clinics selected from the Sou
 
 - This project is based on the Django framework. Refer to the [Django Tutorial](https://www.djangoproject.com/) to install Django.
 - The generation of PDF file depends on the `reportlab` library. Install it using `pip install reportlab`.
-- The route planning depends on the `tsp` library. Install it using `pip install tsp`.
+- The route planning depends on the `tsp, numpy` library. Install it using `pip install tsp numpy`.
 - Change the backend mail server to any SMTP server if needed. Currently it's using a file-based backend.
 
 ## Usage & Limitations
@@ -24,7 +24,7 @@ This section specifies some usage rules for the ASP system. Due to time limit or
 ### Warehouse Personnel
 
 - A warehouse personnel should press the "Generate PDF" button to download the shipping label file from the system.
-- Since the mail server is not implemented (not required by COMP3297), emails are stored in the file system. In order to send the shipping label to the clinic manager for confirmation, the warehouse personnel should put the file under "sent_emails" folder.
+- A warehouse personnel should print and hand the shipping label over to the dispathcer.
 - After the warehouse personnel processed the order, he/she should press the "Confirm" button to notify the system.
 
 ### Dispatcher
