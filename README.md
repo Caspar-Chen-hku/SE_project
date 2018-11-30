@@ -11,9 +11,9 @@ The pilot system will serve only a small number of clinics selected from the Sou
 - The route planning depends on the `tsp, numpy, pandas` library. Install it using `pip install tsp numpy pandas`.
 - Change the backend mail server to any SMTP server if needed. Currently it's using a file-based backend.
 
-## Usage & Limitations
+## Usage and Future Release Planning
 
-This section specifies some usage rules for the ASP system. Due to time limit or design considerations, there are some limitations in this web applications.
+This section specifies some usage rules for the ASP system. Due to time limit or design considerations, there are some limitations in this web application (ASP).
 
 ### Clinic Manager:
 
@@ -24,7 +24,7 @@ This section specifies some usage rules for the ASP system. Due to time limit or
 ### Warehouse Personnel
 
 - A warehouse personnel should press the "Generate PDF" button to download the shipping label file from the system.
-- A warehouse personnel should print and hand the shipping label over to the dispathcer.
+- A warehouse personnel should print and hand the shipping label over to the dispatcher.
 - After the warehouse personnel processed the order, he/she should press the "Confirm" button to notify the system.
 
 ### Dispatcher
@@ -39,3 +39,15 @@ This section specifies some usage rules for the ASP system. Due to time limit or
 - Each user can only register one account using his or her HA account email.
 - There is no means in the user interface to add new medical supplies to the catalogue. All items and their associated data will be added manually by admin.
 - There's currently one supplying hospital (Queen Mary Hospital) and one category of supplies (IV Fluids). Thus the system does not support hospital management and category management.
+
+## Developers
+
+[Haoran Qiu](https://james-qiuhaoran.github.io/index.html), Cheng Chen, Qingqing Li, Shiwen Cao, Xue Wu
+
+## Acknowledgment
+
+The contributors to this project wish to thank [Mr. George Mitcheson](http://www.cs.hku.hk/people/profile.jsp?teacher=georgem) for his generous help and advice throughout this project.
+
+ ## Disclaimer
+ 
+This project has been submitted for partial fulfillment for the course *Software Engineering* offered by University of Hong Kong, 2018-19.
