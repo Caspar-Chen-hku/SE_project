@@ -407,8 +407,8 @@ class DispatcherConfirmDispatch(ListView):
 				from_addr,
 				[to_addr],
 			)
-			attachment = open(order_to_update.address_to_shipping_label, 'rb')
-			email.attach('shipping_label.pdf',attachment.read(),'application/pdf')
+			attachment = open(EMAIL_FILE_PATH+"\\shipping_label-"+str(order.pk)+".pdf", 'rb')
+			email.attach("shipping_label-"+str(order.pk)+".pdf",attachment.read(),'application/pdf')
 			email.send(fail_silently=False)
 		
 		return redirect('/asp/dispatcher/'+str(self.id)+'/home')
@@ -512,8 +512,6 @@ class WarehousePersonnelGenerateSL(ListView):
 		order_to_update = Order.objects.get(pk=order.pk)
 
 		filename = "shipping_label-" + str(order.pk) + ".pdf"
-		order_to_update.address_to_shipping_label = EMAIL_FILE_PATH + "\\" + filename
-		order_to_update.save()
 
 		response['Content-Disposition'] = 'attachment; filename=' + filename
 		
@@ -521,9 +519,10 @@ class WarehousePersonnelGenerateSL(ListView):
 
 		destination = Clinic.objects.get(pk=order.destination_id.pk)
 		p = canvas.Canvas(response)
+		f = canvas.Canvas(EMAIL_FILE_PATH+"\\"+filename)
+		print(EMAIL_FILE_PATH+"\\"+filename)
 		p.setTitle("Shipping Label - ASP")
 		p.drawString(100, 800, 'OrderNumber: ' + str(order.pk))
-
 		p.drawString(300, 800, 'Priority: ' + str(order.priority))
 		p.drawString(100, 750, 'Order info:')
 		length=730
@@ -531,10 +530,19 @@ class WarehousePersonnelGenerateSL(ListView):
 			if elem.order_id == order:
 				item_name = Item.objects.get(pk=elem.item_id.pk).item_name
 				p.drawString(100, length, 'Item Name: ' + str(item_name)+'    Quantity: '+str(elem.item_quantity))
+				f.drawString(100, length, 'Item Name: ' + str(item_name)+'    Quantity: '+str(elem.item_quantity))
 				length=length-20
 		p.drawString(100, length-20, 'Destination: ' + str(destination.clinic_name))
 		p.drawString(100, length-40, 'Address: '+str(destination.clinic_address))
 		p.showPage()
 		p.save()
+		f.setTitle("Shipping Label - ASP")
+		f.drawString(100, 800, 'OrderNumber: ' + str(order.pk))
+		f.drawString(300, 800, 'Priority: ' + str(order.priority))
+		f.drawString(100, 750, 'Order info:')
+		f.drawString(100, length-20, 'Destination: ' + str(destination.clinic_name))
+		f.drawString(100, length-40, 'Address: '+str(destination.clinic_address))
+		f.showPage()
+		f.save()
 
 		return response
