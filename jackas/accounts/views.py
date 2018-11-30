@@ -54,8 +54,7 @@ def signup_cm(request):
             login_user = User.objects.get(username = username)
             userid = login_user.pk
 
-            category_id = Category.objects.get(category_name='IV Fluids').pk
-            return redirect('/asp/clinic_manager/'+str(userid)+'/home/'+str(category_id))
+            return redirect('/asp/clinic_manager/'+str(userid)+'/home')
     else:
         form = SignUpFormCM()
     return render(request, 'signup.html', {'form': form, 'role': 'Clinic Manager'})
