@@ -7,7 +7,8 @@ The pilot system will serve only a small number of clinics selected from the Sou
 ## Dependencies [IMPORTANT]
 
 - This project is based on the Django framework. Refer to the [Django Tutorial](https://www.djangoproject.com/) to install Django.
-- The generation of PDF file dependes on the `reportlab` library. Install it using `pip install reportlab`.
+- The generation of PDF file depends on the `reportlab` library. Install it using `pip install reportlab`.
+- The route planning depends on the `tsp` library. Install it using `pip install tsp`.
 - Change the backend mail server to any SMTP server if needed. Currently it's using a file-based backend.
 
 ## Usage & Limitations
