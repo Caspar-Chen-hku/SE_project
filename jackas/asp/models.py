@@ -100,3 +100,6 @@ class Distance(models.Model):
 	distance = models.DecimalField(max_digits=5, decimal_places=2)
 	def __str__(self):
 		return f'{self.source_clinic_id} - {self.destination_clinic_id}'
+
+	class Meta:
+		unique_together = ('source_clinic_id', 'destination_clinic_id',)
