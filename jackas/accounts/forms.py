@@ -24,7 +24,8 @@ CLINIC_CHOICES = [
     (4, "Sok Kwu Wan General Out-patient Clinic"),
     (5, "Peng Chau General Out-patient Clinic"),
     (6, "Mui Wo General Out-patient Clinic"),
-    (7, "North Lamma General Out-patient Clinic")
+    (7, "North Lamma General Out-patient Clinic"),
+    (8, "Stanley General Out-patient Clinic")
 ]
 
 class SignUpFormCM(UserCreationForm):

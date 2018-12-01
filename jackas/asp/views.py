@@ -12,6 +12,7 @@ from django.http import FileResponse
 from reportlab.pdfgen import canvas
 from reportlab.graphics import renderPDF
 from django.core.mail import EmailMessage
+from django.db.models import Q
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
@@ -278,11 +279,11 @@ def calculatePackage(reordered_list):
 	i = 0
 	while total_weight <= 25 and i < len(reordered_list):
 		package.append(reordered_list[i])
-		total_weight += float(reordered_list[i].weight) + float(1.2)
+		total_weight += float(reordered_list[i].weight)
 		i += 1
 		if i >= len(reordered_list):
 			break
-		elif total_weight + float(reordered_list[i].weight) + float(1.2) > 25:
+		elif total_weight + float(reordered_list[i].weight) > 25:
 			break	
 	return package
 
@@ -302,31 +303,48 @@ class DispatcherViewPackage(ListView):
 		package = calculatePackage(reordered_list)
 		total_weight = sum([elem.weight for elem in package])
 		context['order_list'] = package
-		context['total_weight'] = str(total_weight) + " + 1.2 * " + str(len(package)) + " = " + str(round(float(total_weight)+len(package)*1.2,2))
+		context['total_weight'] = str(total_weight)
 		return context
-		
+
 class DispatcherViewItinerary(ListView):
-	MAXIMUM = 10000
 	def get(self, request):
 		# generate package
 		queue_record_list = DispatchQueue.objects.all()
 		order_list = [elem.order_id for elem in queue_record_list]
+		package = []
+		total_weight = 0
+		i = 0
+		while total_weight <= 25 and i < len(order_list):
+			package.append(order_list[i])
+			total_weight += order_list[i].weight
+			i += 1
+			if i >= len(order_list):
+				break
+			elif total_weight + order_list[i].weight > 25:
+				break
 
-		reordered_list = reorderQueue(order_list)
-		package = calculatePackage(reordered_list) #package is essentially an order list
-		clinic_list = [order.destination_id for order in package]
-		print(clinic_list)
-
-		#clinics include hospital as the first element
-		clinics = [(22.270257,22.270257,161,0)]
-		for i in range(len(clinic_list)):
-			clinics.append((clinic_list[i].latitude, clinic_list[i].longitude, clinic_list[i].altitude, clinic_list[i].distance_to_hospital))
-		
-		distance = self.calDistance(clinic_list)
+		# generate distance list
+		clinic_distance_list = Distance.objects.all()
+		clinic_list = Clinic.objects.all()
+		distance = {}
+		for elem in clinic_distance_list:
+			distance[(elem.source_clinic_id.id, elem.destination_clinic_id.id)] = distance[(elem.destination_clinic_id.id,elem.source_clinic_id.id)] = elem.distance
 		print(distance)
 
-		#result is in the form of (cost, list of indices)
-		shortest = self.genRoute(distance)
+		# generate clinic list
+		clinic = {}
+		for elem in clinic_list:
+			clinic[elem.pk] = (elem.latitude, elem.longitude, elem.altitude, elem.distance_to_hospital)
+
+		# generate destination list
+		route_list = []
+		for order in package:
+			route_list.append(order.destination_id.id)
+			distance[(order.id, order.id)] = 0
+		route_list = list(set(route_list))
+
+		routes_order = self.genRoutes(len(route_list), route_list)
+		shortest = self.calCosts(routes_order, distance, clinic)
 
 		response = HttpResponse(content_type='text/csv')
 		output_name = 'itinerary'
@@ -335,36 +353,33 @@ class DispatcherViewItinerary(ListView):
 		
 		writer = csv.writer(response)
 		writer.writerow(['latitude', 'longitude', 'altitude'])
-		for item in shortest[1][1:]:
-			writer.writerow([clinics[item][0],clinics[item][1],clinics[item][2]])
-
-		# final destination should be the hospital
+		for item in shortest[0]:
+			writer.writerow([clinic[item][0],clinic[item][1],clinic[item][2]])
 		writer.writerow(["22.270257", "22.270257", "161"])
 		return response
 
-	def calDistance(self,clinic_list):
-		distance = {}
+	def calCosts(self, routes, distance, clinic_list):
+		travelCosts = []
+		for route in routes:
+			travelCost = 0
+			travelCost += clinic_list[route[0]][3]
+			travelCost += clinic_list[route[-1]][3]
+			# Sums up the travel cost
+			for i in range(1, len(route)):
+				# takes an element of route, uses it to find the corresponding coords and calculates the distance
+				travelCost += distance[(route[i-1], route[i])]
+			travelCosts.append(travelCost)
+		# pulls out the smallest travel cost
+		smallestCost = min(travelCosts)
+		print(smallestCost)
+		shortest = (routes[travelCosts.index(smallestCost)], smallestCost)
+		return shortest
 
-		distance[(0,0)] = 0.0
-		for i in range(len(clinic_list)):
-			distance[(0,i+1)] = float(clinic_list[i].distance_to_hospital)
-
-		for i in range(len(clinic_list)):
-			distance[(i+1,0)] = float(clinic_list[i].distance_to_hospital)
-			for j in range(len(clinic_list)):
-				if j == i:
-					distance[(i+1,j+1)] = 0.0
-				else:
-					target = Distance.objects.filter(source_clinic_id__pk = clinic_list[i].pk, destination_clinic_id__pk = clinic_list[j].pk)
-					for elem in target:
-						distance[(i+1,j+1)] = float(elem.distance)
-		return distance
-
-	def genRoute(self, distance):
-		r = range(int(math.sqrt(len(distance))))
-		print("r is: "+str(r))
-		# dist = {(i, j): distance[i][j] for i in r for j in r}
-		return tsp.tsp(r, distance)
+	def genRoutes(self, routeLength, route_list):
+		#uses built-in itertools to generate permutations
+		routes = list(map(list, itertools.permutations(route_list)))
+		#inserts the home city, must be the first city in every route
+		return routes
 
 class DispatcherConfirmDispatch(ListView):
 	def get(self, request, *args, **kwargs):
